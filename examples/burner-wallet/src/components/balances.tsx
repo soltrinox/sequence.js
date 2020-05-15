@@ -1,19 +1,12 @@
-import React, { Component, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'
 import * as arcadeum from '@arcadeum/provider'
 import { BigNumberish } from 'ethers/utils'
 import { Web3Provider } from 'ethers/providers'
 import { ethers } from 'ethers'
 import { abi as erc20abi } from "../abi/erc20"
 import { amountFormatter } from "../utils"
-
-import {
-  Box,
-  Card,
-  Image,
-  Heading,
-  Text,
-  Flex
-} from 'rebass'
+import { useHistory } from 'react-router-dom'
+import { Box, Text } from 'rebass'
 
 const RAW_ASSETS = [
   'ETH',
@@ -23,7 +16,7 @@ const RAW_ASSETS = [
 type Asset = {
   name?: String,
   symbol?: String,
-  address?: String,
+  address: String,
   decimals: BigNumberish
 }
 
@@ -76,6 +69,8 @@ async function loadAsset(provider: Web3Provider, wallet: string, address: string
 export function Balances(props: BalancesProps) {
   const [state, setState] = useState<BalancesState>({ balances: []})
 
+  const history = useHistory()
+
   const walletAddress = props.wallet?.address
   const provider = props.provider
 
@@ -88,38 +83,37 @@ export function Balances(props: BalancesProps) {
   }, [walletAddress, provider])
 
   return (
-    <Box p={2}>
+    <Box p={1} my={1}>
       { state.balances.map((balance) =>
-      <Box
-        p={4}
-        marginBottom={2}
-        bg='lightGray'
-        key={balance.asset?.symbol?.toString()}
-      >
-        <Text
-          fontSize={[ 4 ]}
-          fontWeight='bold'
-          color='primary'
-          textAlign='left'
-        >
-          {balance.asset.name}
-        </Text>
-        <Text
-          key={balance.asset.address?.toString()}
-          fontSize={[ 1 ]}
-          fontWeight='bold'
-          color='primary'
-          textAlign='left'
-        >
-          {(() => {
-            const decimals = balance.asset?.decimals ? balance.asset.decimals : 0
-            const formatted = amountFormatter(balance.amount, ethers.utils.bigNumberify(decimals).toNumber(), 3)
-            const symbol = balance.asset?.symbol ? balance.asset.symbol : 'UNK'
+        <Box
+          p={4}
+          marginBottom={2}
+          sx={{ borderRadius: '10px', cursor: 'pointer' }}
+          bg='#eeeeee'
+          key={balance.asset?.symbol?.toString()}
+          onClick={() => history.push(balance.asset.address === 'ETH' ? '/send' : `/send/${balance.asset.address}`) }>
+          <Text
+            fontSize={[ 4 ]}
+            fontWeight='bold'
+            color='primary'
+            textAlign='left'>
+            {balance.asset.name}
+          </Text>
+          <Text
+            key={balance.asset.address?.toString()}
+            fontSize={[ 1 ]}
+            fontWeight='bold'
+            color='primary'
+            textAlign='left'>
+            {(() => {
+              const decimals = balance.asset?.decimals ? balance.asset.decimals : 0
+              const formatted = amountFormatter(balance.amount, ethers.utils.bigNumberify(decimals).toNumber(), 3)
+              const symbol = balance.asset?.symbol ? balance.asset.symbol : 'UNK'
 
-            return <>{ formatted } { symbol }</>
-          })()}
-        </Text>
-      </Box>
+              return <>{ formatted } { symbol }</>
+            })()}
+          </Text>
+        </Box>
       )}
     </Box>
   )

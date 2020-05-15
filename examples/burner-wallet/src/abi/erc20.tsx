@@ -42,5 +42,19 @@ export const abi = [
     ],
     payable: false,
     stateMutability: 'view'
+  }, {
+    type: 'function',
+    name: 'transfer',
+    constant: false,
+    inputs: [
+      {
+        type: 'address'
+      }, {
+        type: 'uint256'
+      }
+    ],
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable'
   }
 ]

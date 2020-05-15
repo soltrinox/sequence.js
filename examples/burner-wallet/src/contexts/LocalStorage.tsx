@@ -1,19 +1,33 @@
 import React, { createContext, useContext, useReducer, useMemo, useCallback, useEffect } from 'react'
+import { ArcadeumTransaction } from '@arcadeum/provider/dist/types'
+import { TransactionResponse } from 'ethers/providers'
 
 const BURNER_WALLET = 'BURNER_WALLET'
 const LAST_SAVED = 'LAST_SAVED'
 
 const ACCOUNT_KEY = 'ACCOUNT_KEY'
 const TRANSACTIONS_KEY = 'TRANSACTIONS_KEY'
+const TRANSACTIONS_HISTORY_KEY = 'TRANSACTIONS_HISTORY_KEY'
 
 const UPDATABLE_KEYS = [
   ACCOUNT_KEY,
-  TRANSACTIONS_KEY
+  TRANSACTIONS_KEY,
+  TRANSACTIONS_HISTORY_KEY
 ]
 
 const UPDATE_KEY = 'UPDATE_KEY'
 
 const LocalStorageContext = createContext(undefined as any)
+
+export type PendingTransactionRequest = {
+  id: string,
+  tx: ArcadeumTransaction
+}
+
+export type RelayedTransaction = {
+  receipt: TransactionResponse,
+  tx: ArcadeumTransaction
+}
 
 function useLocalStorageContext() {
   return useContext(LocalStorageContext)
@@ -78,13 +92,11 @@ export default function Provider({ children }: any) {
 export function useMnemonic() {
   const [state, { updateKey }] = useLocalStorageContext()
 
-  let accountKey = state[ACCOUNT_KEY]
-
   const setMnemonic = useCallback(
     value => {
       updateKey(ACCOUNT_KEY, value)
     },
-    [updateKey, accountKey]
+    [updateKey]
   )
 
   return [state[ACCOUNT_KEY], setMnemonic]
@@ -93,21 +105,38 @@ export function useMnemonic() {
 export function useTransactionsQueue() {
   const [state, { updateKey }] = useLocalStorageContext()
 
-  let transactionsKey = state[TRANSACTIONS_KEY]
+  let transactionsKey = state[TRANSACTIONS_KEY] as PendingTransactionRequest[]
+  transactionsKey = transactionsKey ? transactionsKey : []
 
   const addTransaction = useCallback(
-    value => {
+    (value: PendingTransactionRequest) => {
       updateKey(TRANSACTIONS_KEY, [...transactionsKey, value])
     },
     [updateKey, transactionsKey]
   )
 
   const removeTransaction = useCallback(
-    value => {
-      updateKey(TRANSACTIONS_KEY, [...transactionsKey, value])
+    (value: PendingTransactionRequest) => {
+      updateKey(TRANSACTIONS_KEY, transactionsKey.filter((a) => a.id !== value.id))
     },
     [updateKey, transactionsKey]
   )
 
-  return [state[TRANSACTIONS_KEY], addTransaction]
+  return [state[TRANSACTIONS_KEY], addTransaction, removeTransaction]
+}
+
+export function useTransactionsHistory() {
+  const [state, { updateKey }] = useLocalStorageContext()
+
+  let transactionsKey = state[TRANSACTIONS_HISTORY_KEY] as RelayedTransaction[]
+  transactionsKey = transactionsKey ? transactionsKey : []
+
+  const addTransaction = useCallback(
+    (value: RelayedTransaction) => {
+      updateKey(TRANSACTIONS_HISTORY_KEY, [...transactionsKey, value])
+    },
+    [updateKey, transactionsKey]
+  )
+
+  return [state[TRANSACTIONS_HISTORY_KEY], addTransaction]
 }

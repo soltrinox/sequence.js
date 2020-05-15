@@ -1,21 +1,23 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import './App.css'
 
 import { Account } from '../components/account'
 import { Send } from '../components/send'
 import { Balances } from '../components/balances'
+import { Approve } from '../components/approve'
 
 import { useMnemonic } from '../contexts/LocalStorage'
-import { Web3Provider } from 'ethers/providers'
+import { Web3Provider, JsonRpcProvider } from 'ethers/providers'
 
 import * as ethers from 'ethers'
 import * as arcadeum from '@arcadeum/provider'
-import { Switch, Route, BrowserRouter, Redirect } from 'react-router-dom'
+import { Switch, Route, BrowserRouter, Redirect, Link } from 'react-router-dom'
 
 import preset from '@rebass/preset'
 import { ThemeProvider } from 'emotion-theming'
 
 import { Box, Text, Flex } from 'rebass'
+import { Transactions } from '../components/transactions'
 
 const theme = {
   ...preset,
@@ -27,14 +29,19 @@ const ARCADEUM_CONTEXT = {
   mainModuleUpgradable: '0xC7cE8a07f69F226E52AEfF57085d8C915ff265f7'
 }
 
-const RPC_PROVIDER = 'https://rinkeby.infura.io/v3/df1fe4ce54154742a0d85cca9bfa36ef'
+const RPC_PROVIDER = process.env.REACT_APP_RPC_URL as string
+
+// Create local relayer
+// TODO Connect to relayer server
+const relayerSigner = new ethers.Wallet(process.env.REACT_APP_RELAYER_PK!).connect(new JsonRpcProvider(RPC_PROVIDER))
+const LOCAL_RELAYER = new arcadeum.LocalRelayer(relayerSigner)
 
 function App() {
   const [mnemonic, setMnemonic] = useMnemonic()
   const [state, setState] = useState<{ wallet?: arcadeum.Wallet, provider?: Web3Provider }>({})
 
   useEffect(() => {
-    let signer
+    let signer: ethers.Wallet
 
     if (!mnemonic) {
       signer = ethers.Wallet.createRandom()
@@ -42,67 +49,86 @@ function App() {
     } else {
       signer = ethers.Wallet.fromMnemonic(mnemonic)
     }
-    
+
+    // Create arcadeum wallet instance
     arcadeum.Wallet.singleOwner(ARCADEUM_CONTEXT, signer).then((wallet) => {
+      // Connect wallet to provider and relayer
       wallet.setProvider(RPC_PROVIDER)
-      wallet.setRelayer({} as any) // TODO Add relayer
+      wallet.setRelayer(LOCAL_RELAYER)
+
+      // Create arecadeum provider
       const provider = new Web3Provider(new arcadeum.Provider(wallet))
-      
+
       setState({
         provider: provider,
         wallet: wallet
       })
     })
-  }, [])
+  }, [mnemonic, setMnemonic])
+
+  const arcadeumProps = { wallet: state.wallet, provider: state.provider }
 
   return (
     <div className="App">
-      <ThemeProvider theme={theme}>
-      <Box
-        minHeight={750}
-        sx={{
-          maxWidth: '75%',
-          mx: 'auto',
-          px: 3,
-          marginTop: '32px'
-        }}>
-        <Flex
-          px={2}
-          color='white'
-          bg='black'
-          alignItems='center'>
-          <Account wallet={state.wallet} />
-        </Flex>
-        <Flex flexWrap='wrap' mx={-2} >
-          <Box width={[1, 1, 1/3]}>
-            <Balances wallet={state.wallet} provider={state.provider}></Balances>
-          </Box>
-          <Box marginLeft={2}>
-            <BrowserRouter>
-              <Switch>
-                <Route exact strict path="/home">
-                  <Box px={2} py={2} width={[1, 1, 2/3]}>
-                    <Text p={1} bg='blue'>1/3</Text>
-                  </Box>
-                </Route>
-                <Route
-                  path="/send/:asset"
-                  render={({ match }) => {
-                    return (
-                      <Send wallet={state.wallet} provider={state.provider} asset={match.params.asset}></Send>
-                    )
-                  }}
-                />
-                <Route path="/send/">
-                  <Send wallet={state.wallet} provider={state.provider}></Send>
-                </Route>
-                <Redirect to="/home" />
-              </Switch>
-            </BrowserRouter>
-          </Box>
-        </Flex>
-      </Box>
-      </ThemeProvider>
+      <BrowserRouter>
+        <ThemeProvider theme={theme}>
+        <Box
+          minHeight={750}
+          my={4}
+          sx={{
+            maxWidth: '75%',
+            mx: 'auto',
+            px: 3
+          }}
+        >
+          <Link to='/home' style={{ textDecoration: 'none' }}>
+            <Text
+              fontSize={[ 4 ]}
+              fontWeight='bold'
+              color='primary'
+              textAlign='left'
+              my={2}>
+              Sequence Burner wallet
+            </Text>
+          </Link>
+          <Flex
+            px={2}
+            bg='black'
+            sx={{ borderRadius: '10px' }}>
+            <Account {...arcadeumProps} />
+          </Flex>
+          <Flex flexWrap='wrap' mx={-1} >
+            <Box width={[1, 1, 1/3]}>
+              <Balances {...arcadeumProps}></Balances>
+            </Box>
+            <Box width={[1, 1, 2/3]}>
+              <Box p={4} mx={1} my={2} sx={{ borderRadius: '10px' }} bg='#eeeeee'>
+                <Switch>
+                  <Route path="/home">
+                    <Transactions></Transactions>
+                  </Route>
+                  <Route
+                    path="/send/:asset"
+                    render={({ match }) => {
+                      return (
+                        <Send {...arcadeumProps} asset={match.params.asset}></Send>
+                      )
+                    }}
+                  />
+                  <Route path="/send/">
+                    <Send {...arcadeumProps}></Send>
+                  </Route>
+                  <Route path="/approve/">
+                    <Approve {...arcadeumProps}></Approve>
+                  </Route>
+                  <Redirect to="/home" />
+                </Switch>
+              </Box>
+            </Box>
+          </Flex>
+        </Box>
+        </ThemeProvider>
+      </BrowserRouter>
     </div>
   )
 }
