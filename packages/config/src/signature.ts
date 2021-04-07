@@ -238,3 +238,7 @@ export const encodeSignature = (sig: DecodedSignature): string => {
 
   return ethers.utils.solidityPack(['uint16', ...Array(accountBytes.length).fill('bytes')], [sig.threshold, ...accountBytes])
 }
+
+export const isUsableSignature = (sig: DecodedSignature): boolean => {
+  return sig.signers.reduce((c, p) => isDecodedSigner(p) ? p.weight + c : c, 0) >= sig.threshold
+}

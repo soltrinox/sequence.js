@@ -1,7 +1,7 @@
 import { editConfig, genConfig, SequenceUtilsFinder, WalletConfig } from "@0xsequence/config"
 import { ETHAuth, Proof } from "@0xsequence/ethauth"
 import { NetworkConfig, WalletContext, getAuthNetwork, findNetworkConfig } from "@0xsequence/network"
-import { Account } from "@0xsequence/wallet"
+import { Account, SignOptions } from "@0xsequence/wallet"
 import { ethers, Signer as AbstractSigner } from "ethers"
 import { ArcadeumAPIClient } from '@0xsequence/api'
 
@@ -205,7 +205,9 @@ export class Session implements SessionDump {
     metadata: SessionMeta,
     deepSearch?: boolean,
     knownConfigs?: WalletConfig[],
-    noIndex?: boolean
+    noIndex?: boolean,
+    allSigners?: boolean,
+    signOptions?: SignOptions
   }): Promise<Session> {
     const {
       context,
@@ -216,7 +218,9 @@ export class Session implements SessionDump {
       deepSearch,
       knownConfigs,
       noIndex,
-      metadata
+      metadata,
+      allSigners,
+      signOptions
     } = args
 
     const authChain = getAuthNetwork(networks)
@@ -275,7 +279,7 @@ export class Session implements SessionDump {
         editConfig(config, {
           threshold: thershold,
           set: await solvedSigners
-        }), noIndex ? false : true
+        }), noIndex ? false : true, allSigners, signOptions
       )
 
       // Session is ready, lets update

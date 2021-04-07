@@ -6,7 +6,7 @@ import { Signer, NotEnoughSigners } from './signer'
 import { SignedTransactions, Transactionish, Transaction } from '@0xsequence/transactions'
 import { WalletConfig, WalletState, isConfigEqual, sortConfig, ConfigFinder, SequenceUtilsFinder } from '@0xsequence/config'
 import { ChainId, Networks, NetworkConfig, WalletContext, sequenceContext, mainnetNetworks, ensureValidNetworks, sortNetworks, getNetworkId } from '@0xsequence/network'
-import { Wallet } from './wallet'
+import { SignOptions, Wallet } from './wallet'
 import { resolveArrayProperties } from './utils'
 import { Relayer, RpcRelayer } from '@0xsequence/relayer'
 import { encodeTypedDataDigest } from '@0xsequence/utils'
@@ -254,7 +254,7 @@ export class Account extends Signer {
 
   // updateConfig will build an updated config transaction, update the imageHash on-chain and also publish
   // the wallet config to the authChain. Other chains are lazy-updated on-demand as batched transactions.
-  async updateConfig(newConfig?: WalletConfig, index?: boolean): Promise<[WalletConfig, TransactionResponse | undefined]> {
+  async updateConfig(newConfig?: WalletConfig, index?: boolean, allSigners?: boolean, options?: SignOptions): Promise<[WalletConfig, TransactionResponse | undefined]> {
     const authWallet = this.authWallet().wallet
 
     if (!newConfig) {
@@ -283,7 +283,7 @@ export class Account extends Signer {
 
     // Update to new configuration on the authWallet. Other networks will be lazily updated
     // once used. The wallet config is also auto-published to the authChain.
-    const [_, tx] = await authWallet.useConfig(lastConfig!).updateConfig(newConfig, undefined, true, index)
+    const [_, tx] = await authWallet.useConfig(lastConfig!).updateConfig(newConfig, undefined, true, index, allSigners, options)
 
     return [{
       ...newConfig,

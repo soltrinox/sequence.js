@@ -44,7 +44,9 @@ import {
   joinSignatures,
   recoverEOASigner,
   decodeSignature,
-  isDecodedFullSigner
+  isDecodedFullSigner,
+  DecodedSignaturePart,
+  isUsableSignature
 } from '@0xsequence/config'
 
 import { encodeTypedDataDigest } from '@0xsequence/utils'
@@ -56,6 +58,18 @@ import { packMessageData, resolveArrayProperties } from './utils'
 import { isSequenceSigner, Signer } from './signer'
 import { fetchImageHash } from '.'
 
+export class SignerError extends Error {
+  constructor(m: string, public signer: string) {
+    super(m)
+    Object.setPrototypeOf(this, SignerError.prototype)
+  }
+}
+
+// TODO: Refactor and move all signature optional parameters to this type
+export type SignOptions = {
+  onSign?: (address: string, part: DecodedSignaturePart) => void
+  onError?: (address: string, error: any) => boolean
+}
 
 // Wallet is a signer interface to a Smart Contract based Ethereum account.
 //
@@ -279,19 +293,19 @@ export class Wallet extends Signer {
   }
 
   // sendTransaction will dispatch the transaction to the relayer for submission to the network.
-  async sendTransaction(transaction: Deferrable<Transactionish>, chainId?: ChainId, allSigners?: boolean): Promise<TransactionResponse> {
-    return this.relayer.relay(await this.signTransactions(transaction, chainId, allSigners))
+  async sendTransaction(transaction: Deferrable<Transactionish>, chainId?: ChainId, allSigners?: boolean, options?: SignOptions): Promise<TransactionResponse> {
+    return this.relayer.relay(await this.signTransactions(transaction, chainId, allSigners, options))
   }
 
   // sendTransactionBatch is a sugar for better readability, but is the same as sendTransaction
-  async sendTransactionBatch(transactions: Deferrable<TransactionRequest[] | Transaction[]>, chainId?: ChainId, allSigners: boolean = true): Promise<TransactionResponse> {
-    return this.sendTransaction(transactions, chainId, allSigners)
+  async sendTransactionBatch(transactions: Deferrable<TransactionRequest[] | Transaction[]>, chainId?: ChainId, allSigners: boolean = true, options?: SignOptions): Promise<TransactionResponse> {
+    return this.sendTransaction(transactions, chainId, allSigners, options)
   }
 
   // signTransactions will sign a Sequence transaction with the wallet signers
   //
   // NOTE: the txs argument of type Transactionish can accept one or many transactions. 
-  async signTransactions(txs: Deferrable<Transactionish>, chainId?: ChainId, allSigners?: boolean): Promise<SignedTransactions> {
+  async signTransactions(txs: Deferrable<Transactionish>, chainId?: ChainId, allSigners?: boolean, options?: SignOptions): Promise<SignedTransactions> {
     const signChainId = await this.getChainIdNumber(chainId)
 
     const transaction = (await resolveArrayProperties<Transactionish>(txs))
@@ -357,7 +371,7 @@ export class Wallet extends Signer {
       context: this.context,
       config: this.config,
       transactions: stx,
-      signature: await this.sign(encodeMetaTransactionsData(...stx), false, chainId, allSigners)
+      signature: await this.sign(encodeMetaTransactionsData(...stx), false, chainId, allSigners, options)
     }
   }
 
@@ -372,12 +386,12 @@ export class Wallet extends Signer {
   // signMessage will sign a message for a particular chainId with the wallet signers
   //
   // NOTE: signMessage(message: Bytes | string): Promise<string> is defined on AbstractSigner
-  async signMessage(message: BytesLike, chainId?: ChainId, allSigners?: boolean, isDigest: boolean = false): Promise<string> {
+  async signMessage(message: BytesLike, chainId?: ChainId, allSigners?: boolean, isDigest: boolean = false, options?: SignOptions): Promise<string> {
     const data = typeof(message) === 'string' && !message.startsWith('0x') ? ethers.utils.toUtf8Bytes(message) : message
-    return this.sign(data, isDigest, chainId, allSigners)
+    return this.sign(data, isDigest, chainId, allSigners, options)
   }
 
-  async signTypedData(domain: TypedDataDomain, types: Record<string, Array<TypedDataField>>, message: Record<string, any>, chainId?: ChainId, allSigners?: boolean): Promise<string> {
+  async signTypedData(domain: TypedDataDomain, types: Record<string, Array<TypedDataField>>, message: Record<string, any>, chainId?: ChainId, allSigners?: boolean, options?: SignOptions): Promise<string> {
     const signChainId = await this.getChainIdNumber(chainId)
 
     const domainChainId = domain.chainId ? BigNumber.from(domain.chainId).toNumber() : undefined
@@ -386,7 +400,7 @@ export class Wallet extends Signer {
     }
 
     const hash = encodeTypedDataDigest({ domain, types, message })
-    return this.sign(hash, true, signChainId, allSigners)
+    return this.sign(hash, true, signChainId, allSigners, options)
   }
 
   async _signTypedData(domain: TypedDataDomain, types: Record<string, Array<TypedDataField>>, message: Record<string, any>, chainId?: ChainId, allSigners?: boolean): Promise<string> {
@@ -394,7 +408,7 @@ export class Wallet extends Signer {
   }
 
   // sign is a helper method to sign a payload with the wallet signers
-  async sign(msg: BytesLike, isDigest: boolean = true, chainId?: ChainId, allSigners?: boolean): Promise<string> {
+  async sign(msg: BytesLike, isDigest: boolean = true, chainId?: ChainId, allSigners?: boolean, options?: SignOptions): Promise<string> {
     const signChainId = await this.getChainIdNumber(chainId)
 
     const digest = isDigest ? msg : ethers.utils.keccak256(msg)
@@ -409,69 +423,84 @@ export class Wallet extends Signer {
     // Sign sub-digest using a set of signers and some optional data
     const signWith = async (signers: AbstractSigner[], auxData?: string): Promise<DecodedSignature> => {
       const signersAddr = await Promise.all(signers.map(s => s.getAddress()))
-      const parts = await Promise.all(this.config.signers.map(async (s) => {
-        try {
-          const signer = signers[signersAddr.indexOf(s.address)]
-
-          // Is not a signer, return config entry as-is
-          if (!signer) {
-            return s
-          }
-
-          // Is another Sequence wallet as signer, sign and append '03' (ERC1271 type)
-          if (isSequenceSigner(signer)) {
-            if (signer === this) throw Error('Can\'t sign transactions for self')
-            const signature = await signer.signMessage(subDigest, signChainId, allSigners, true) + '03'
-
-            return {
-              ...s,
-              signature: signature
-            }
-          }
-
-          // Is remote signer, call and deduce signature type
-          if (RemoteSigner.isRemoteSigner(signer)) {
-            const signature = await signer.signMessageWithData(subDigest, auxData, signChainId)
-
-            try {
-              // Check if signature can be recovered as EOA signature
-              const isEOASignature = recoverEOASigner(subDigest, { weight: s.weight, signature: signature }) === s.address
-
-              if (isEOASignature) {
-                // Exclude address on EOA signatures
-                return {
-                  weight: s.weight,
-                  signature: signature
-                }
-              }
-            } catch {}
-
-            // Prepare signature for full encoding
-            return {
-              ...s,
-              signature: signature
-            }
-          }
-
-          // Is EOA signer
-          return {
-            weight: s.weight,
-            signature: await signer.signMessage(subDigest) + '02'
-          }
-        } catch (err) {
-          if (allSigners) {
-            throw err
-          } else {
-            console.warn(`Skipped signer ${s.address}`)
-            return s
-          }
+      return new Promise<DecodedSignature>((resolve, reject) => {
+        // Copy config and generate empty signature
+        const signature = { threshold: this.config.threshold, signers: this.config.signers.map((s) => ({ ...s })) } as DecodedSignature
+        if (signers.length === 0) {
+          resolve(signature)
+          return
         }
-      }))
 
-      return {
-        threshold: this.config.threshold,
-        signers: parts
-      }
+        const addPart = (address: string, index: number, p: DecodedSignaturePart) => {
+          signature.signers[index] = p
+          if (options?.onSign) options.onSign(address, p)
+          if (isUsableSignature(signature)) resolve(signature)
+        }
+
+        // Call all signers and accumulate parts
+        Promise.all(this.config.signers.map((s, i) => (async () => {
+          try {
+            const signer = signers[signersAddr.indexOf(s.address)]
+
+            // If not a signer, ignore
+            if (!signer) {
+              return
+            }
+
+            // Is another Sequence wallet as signer, sign and append '03' (ERC1271 type)
+            if (isSequenceSigner(signer)) {
+              if (signer === this) {
+                throw Error('Can\'t sign transactions for self')
+              }
+
+              const signature = await signer.signMessage(subDigest, signChainId, allSigners, true) + '03'
+
+              addPart(s.address, i, {
+                ...s,
+                signature: signature
+              })
+              return
+            }
+
+            // Is remote signer, call and deduce signature type
+            if (RemoteSigner.isRemoteSigner(signer)) {
+              const signature = await signer.signMessageWithData(subDigest, auxData, signChainId)
+
+              try {
+                // Check if signature can be recovered as EOA signature
+                const isEOASignature = recoverEOASigner(subDigest, { weight: s.weight, signature: signature }) === s.address
+
+                if (isEOASignature) {
+                  // Exclude address on EOA signatures
+                  addPart(s.address, i, {
+                    weight: s.weight,
+                    signature: signature
+                  })
+                  return
+                }
+              } catch {}
+
+              // Prepare signature for full encoding
+              addPart(s.address, i, {
+                ...s,
+                signature: signature
+              })
+              return
+            }
+
+            // Is EOA signer
+            addPart(s.address, i, {
+              weight: s.weight,
+              signature: await signer.signMessage(subDigest) + '02'
+            })
+            return
+          } catch (err) {
+            if (allSigners || options?.onError && !options?.onError(s.address, err)) {
+              throw new SignerError(err, s.address)
+            }
+          }
+        })())).catch((err) => reject(err)).then(() => resolve(signature))
+      })
     }
 
     // Split local signers and remote signers
@@ -510,7 +539,9 @@ export class Wallet extends Signer {
     config?: WalletConfig,
     nonce?: number,
     publish = false,
-    indexed?: boolean
+    indexed?: boolean,
+    allSigners?: boolean,
+    options?: SignOptions
   ): Promise<[WalletConfig, TransactionResponse]> {
     if (!config) config = this.config
 
@@ -521,7 +552,7 @@ export class Wallet extends Signer {
 
     return [
       { address: this.address, ...config },
-      await this.sendTransaction(appendNonce(txs, n))
+      await this.sendTransaction(appendNonce(txs, n), undefined, allSigners, options)
     ]
   }
 
