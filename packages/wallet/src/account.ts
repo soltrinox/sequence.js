@@ -203,7 +203,7 @@ export class Account extends Signer {
     return this.signTypedData(domain, types, message, chainId, allSigners)
   }
 
-  async sendTransaction(dtransactionish: Deferrable<Transactionish>, chainId?: ChainId, allSigners: boolean = true): Promise<TransactionResponse> {
+  async sendTransaction(dtransactionish: Deferrable<Transactionish>, chainId?: ChainId, allSigners: boolean = true, options?: SignOptions): Promise<TransactionResponse> {
     const transaction = await resolveArrayProperties<Transactionish>(dtransactionish)
     const wallet = chainId ? this.getWalletByNetwork(chainId).wallet : this.mainWallet().wallet
 
@@ -220,7 +220,7 @@ export class Account extends Signer {
 
     // If the wallet is updated, procede to transaction send
     if (isConfigEqual(lastConfig!, thisConfig!)) {
-      return wallet.useConfig(lastConfig!).sendTransaction(transaction)
+      return wallet.useConfig(lastConfig!).sendTransaction(transaction, chainId, allSigners, options)
     }
 
     // Bundle with configuration update
@@ -235,7 +235,7 @@ export class Account extends Signer {
     return wallet.useConfig(thisConfig!).sendTransaction([
       ...await wallet.buildUpdateConfigTransaction(lastConfig!, false),
       ...transactionParts
-    ])
+    ], chainId, allSigners, options)
   }
 
   async sendTransactionBatch(transactions: Deferrable<TransactionRequest[] | Transaction[]>, chainId?: ChainId, allSigners: boolean = true): Promise<TransactionResponse> {

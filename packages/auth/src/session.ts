@@ -207,7 +207,9 @@ export class Session implements SessionDump {
     knownConfigs?: WalletConfig[],
     noIndex?: boolean,
     allSigners?: boolean,
-    signOptions?: SignOptions
+    signOptions?: SignOptions,
+    onConfig?: (config: WalletConfig) => void,
+    genSigner?: (address: string) => AbstractSigner | undefined
   }): Promise<Session> {
     const {
       context,
@@ -220,7 +222,9 @@ export class Session implements SessionDump {
       noIndex,
       metadata,
       allSigners,
-      signOptions
+      signOptions,
+      onConfig,
+      genSigner
     } = args
 
     const authChain = getAuthNetwork(networks)
@@ -233,7 +237,7 @@ export class Session implements SessionDump {
       signers.map(async s => ({ ...s, address: typeof(s.signer) === 'string' ? s.signer : await s.signer.getAddress() }))
     )
 
-    const fullSigners = signers.filter(s => typeof(s.signer) !== 'string').map(s => s.signer)
+    const fullSigners = signers.filter(s => typeof(s.signer) !== 'string').map(s => s.signer) as ethers.Signer[]
   
     const existingWallet = (await configFinder.findLastWalletOfInitialSigner({
       signer: referenceSigner,
@@ -254,13 +258,22 @@ export class Session implements SessionDump {
       })).config
   
       if (!config) throw Error('Wallet config not found')
+
+      // Callback with retrieved existing config
+      if (onConfig) onConfig(config)
+
+      // Generate existing signers for all members of the config
+      const allProvidedSigners = await Promise.all(fullSigners.map((s) => s.getAddress()))
+      const genSigners = genSigner ? config.signers
+        .filter((s) => allProvidedSigners.indexOf(s.address) === -1)
+        .map((s) => genSigner(s.address)).filter((s) => s !== undefined)  as ethers.Signer[] : []
   
       // Load prev account
       const account = new Account({
         initialConfig: config,
         networks: networks,
         context: context
-      }, ...fullSigners)
+      }, ...fullSigners, ...genSigners)
   
       const session = new Session(
         config,
@@ -288,7 +301,7 @@ export class Session implements SessionDump {
         initialConfig: newConfig,
         networks: networks,
         context: context
-      }, ...fullSigners))
+      }, ...fullSigners, ...genSigners))
 
       // Fire JWT requests again, but with new config
       // MAYBE This is not neccesary, we can rely on the first request?
@@ -301,7 +314,10 @@ export class Session implements SessionDump {
     } else {
       // fresh account
       const config = genConfig(thershold, await solvedSigners)
-    
+
+      // Callback with retrieved existing config
+      if (onConfig) onConfig(config)
+
       const account = new Account({
         initialConfig: config,
         networks: networks,

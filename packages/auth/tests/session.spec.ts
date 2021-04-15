@@ -18,7 +18,7 @@ const HookCallerMockArtifact = require('@0xsequence/wallet-contracts/artifacts/c
 const { expect } = chai.use(chaiAsPromised)
 
 import { Session, ValidateSequenceDeployedWalletProof, ValidateSequenceUndeployedWalletProof } from '../src'
-import { compareAddr } from '@0xsequence/config'
+import { compareAddr, imageHash, WalletConfig } from '@0xsequence/config'
 
 import * as mockServer from "mockttp"
 import { ETHAuth } from '@0xsequence/ethauth'
@@ -916,6 +916,189 @@ describe('Wallet integration', function () {
         expect(session.jwts[sequenceApiUrl].expiration).to.equal(baseTime + 120 - 60)
         expect(session.jwts[sequenceApiUrl].token).to.equal(fakeJwt)
       })
+    })
+  })
+  describe('Using tx aggregator signers', async () => {
+    it("Should request signer spawning", async () => {
+      const referenceSigner = ethers.Wallet.createRandom()
+
+      const ogSession = await Session.open({
+        context: context,
+        networks: networks,
+        referenceSigner: referenceSigner.address,
+        signers: [{ signer: referenceSigner, weight: 1 }],
+        thershold: 1,
+        metadata: {
+          name: "Test"
+        }
+      })
+  
+      const newSigner = ethers.Wallet.createRandom()
+
+      var calledGen = 0
+  
+      const session = await Session.open({
+        context: context,
+        networks: networks,
+        referenceSigner: referenceSigner.address,
+        signers: [{ signer: newSigner.address, weight: 1 }],
+        thershold: 2,
+        metadata: {
+          name: "Test"
+        },
+        genSigner: (address: string) => {
+          calledGen++
+
+          if (address === referenceSigner.address) {
+            return referenceSigner
+          }
+        }
+      })
+  
+      const [ogSignerId, signerId] = compareAddr(referenceSigner.address, newSigner.address) === 1 ? [1, 0] : [0, 1]
+  
+      expect(session.account.address).to.equal(ogSession.account.address)
+      expect(session.config.threshold).to.equal(2)
+      expect(session.config.signers.length).to.equal(2)
+      expect(session.config.signers[ogSignerId].address).to.equal(referenceSigner.address)
+      expect(session.config.signers[ogSignerId].weight).to.equal(1)
+      expect(session.config.signers[signerId].address).to.equal(newSigner.address)
+      expect(session.config.signers[signerId].weight).to.equal(1)
+
+      expect(calledGen).to.equal(1)
+    })
+    it("Should skip requesting signer if signer was provided", async () => {
+      const referenceSigner = ethers.Wallet.createRandom()
+
+      const ogSession = await Session.open({
+        context: context,
+        networks: networks,
+        referenceSigner: referenceSigner.address,
+        signers: [{ signer: referenceSigner, weight: 1 }],
+        thershold: 1,
+        metadata: {
+          name: "Test"
+        }
+      })
+  
+      const newSigner = ethers.Wallet.createRandom()
+
+      var calledGen = 0
+  
+      const session = await Session.open({
+        context: context,
+        networks: networks,
+        referenceSigner: referenceSigner.address,
+        signers: [{ signer: referenceSigner, weight: 1 }, { signer: newSigner.address, weight: 1 }],
+        thershold: 2,
+        metadata: {
+          name: "Test"
+        },
+        genSigner: () => {
+          calledGen++
+          return undefined
+        }
+      })
+  
+      const [ogSignerId, signerId] = compareAddr(referenceSigner.address, newSigner.address) === 1 ? [1, 0] : [0, 1]
+  
+      expect(session.account.address).to.equal(ogSession.account.address)
+      expect(session.config.threshold).to.equal(2)
+      expect(session.config.signers.length).to.equal(2)
+      expect(session.config.signers[ogSignerId].address).to.equal(referenceSigner.address)
+      expect(session.config.signers[ogSignerId].weight).to.equal(1)
+      expect(session.config.signers[signerId].address).to.equal(newSigner.address)
+      expect(session.config.signers[signerId].weight).to.equal(1)
+
+      expect(calledGen).to.equal(0)
+    })
+    it("Should fail if genSigner is not provided", async () => {
+      const referenceSigner = ethers.Wallet.createRandom()
+
+      const ogSession = await Session.open({
+        context: context,
+        networks: networks,
+        referenceSigner: referenceSigner.address,
+        signers: [{ signer: referenceSigner, weight: 1 }],
+        thershold: 1,
+        metadata: {
+          name: "Test"
+        }
+      })
+  
+      const newSigner = ethers.Wallet.createRandom()
+
+      var calledGen = 0
+  
+      const session = Session.open({
+        context: context,
+        networks: networks,
+        referenceSigner: referenceSigner.address,
+        signers: [{ signer: newSigner.address, weight: 1 }],
+        thershold: 2,
+        metadata: {
+          name: "Test"
+        },
+        genSigner: () => {
+          calledGen++
+          return undefined
+        }
+      })
+
+      await expect(session).to.be.rejected
+
+      expect(calledGen).to.equal(1)
+    })
+    it("Should callback onConfig", async () => {
+      const referenceSigner = ethers.Wallet.createRandom()
+
+      const ogSession = await Session.open({
+        context: context,
+        networks: networks,
+        referenceSigner: referenceSigner.address,
+        signers: [{ signer: referenceSigner, weight: 1 }],
+        thershold: 1,
+        metadata: {
+          name: "Test"
+        }
+      })
+  
+      const newSigner = ethers.Wallet.createRandom()
+
+      var config: WalletConfig = undefined
+  
+      await Session.open({
+        context: context,
+        networks: networks,
+        referenceSigner: referenceSigner.address,
+        signers: [{ signer: referenceSigner, weight: 1 }, { signer: newSigner.address, weight: 3 }],
+        thershold: 2,
+        metadata: {
+          name: "Test"
+        },
+        onConfig: (c) => { config = c }
+      })
+
+      expect(imageHash(config)).to.equal(imageHash(ogSession.config))
+    })
+    it("Should callback onConfig during first login", async () => {
+      const referenceSigner = ethers.Wallet.createRandom()
+
+      var config: WalletConfig = undefined
+
+      const ogSession = await Session.open({
+        context: context,
+        networks: networks,
+        referenceSigner: referenceSigner.address,
+        signers: [{ signer: referenceSigner, weight: 1 }],
+        thershold: 1,
+        metadata: {
+          name: "Test"
+        },
+        onConfig: (c) => { config = c }
+      })
+
+      expect(imageHash(config)).to.equal(imageHash(ogSession.config))
     })
   })
 })
