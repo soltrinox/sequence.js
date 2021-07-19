@@ -76,10 +76,10 @@ export class OverwriterSequenceEstimator implements Estimator {
       } as DecodedFullSigner
     }))})
 
-    // Use the provided nonce
-    // TODO: Maybe ignore if this fails on the MainModuleGasEstimation
-    // it could help reduce the edge cases for when the gas estimation fails
-    const nonce = readSequenceNonce(...transactions)
+    // The nonce is ignored by the MainModuleGasEstimator
+    // so we use a stub nonce takes at least 4 bytes
+    const nonce = ethers.BigNumber.from(4294967295)
+
     const encoded = sequenceTxAbiEncode(transactions)
 
     const sequenceOverwrites = {

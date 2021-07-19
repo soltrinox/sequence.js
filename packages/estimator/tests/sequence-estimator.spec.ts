@@ -250,6 +250,19 @@ describe('Wallet integration', function () {
       
               expect((await callReceiver.lastValA()).toNumber()).to.equal(0)
             })
+
+            it("should use invalid nonce for gas estimation", async () => {
+              const altTxs = [{ ...txs[0], nonce: 9999 }]
+              const estimation = await estimator.estimateGasLimits(wallet.config, wallet.context, ...altTxs)
+
+              const estimatedTx = [{ ...txs[0], gasLimit: estimation.transactions[0].gasLimit }]
+              const realTx = await (await wallet.sendTransaction(estimatedTx)).wait(1)
+  
+              expect(realTx.gasUsed.toNumber()).to.be.approximately(estimation.total.toNumber(), 10000)
+              expect(realTx.gasUsed.toNumber()).to.be.below(estimation.total.toNumber())
+  
+              expect((await callReceiver.lastValA()).toNumber()).to.equal(14442)
+            })
           })
 
           describe("a batch of transactions", () => {
