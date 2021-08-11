@@ -105,20 +105,21 @@ export const imageHash = (config: WalletConfig): string => {
 
 // sortConfig normalizes the list of signer addreses in a WalletConfig
 export const sortConfig = (config: WalletConfig): WalletConfig => {
-  config.signers.sort((a, b) => compareAddr(a.address, b.address))
-
-  // normalize
-  config.signers.forEach(s => s.address = ethers.utils.getAddress(s.address))
   if (config.address) config.address = ethers.utils.getAddress(config.address)
 
+  // normalize
+  const signers = config.signers
+    .map(s => ({ ...s, address: ethers.utils.getAddress(s.address) }))
+    .sort((a, b) => compareAddr(a.address, b.address))
+
+
   // ensure no duplicate signers in the config
-  const signers = config.signers.map(s => s.address)
   const signerDupes = signers.filter((c, i) => signers.indexOf(c) !== i)
   if (signerDupes.length > 0) {
     throw new Error('invalid wallet config: duplicate signer addresses detected in the config, ${signerDupes}')
   }
 
-  return config
+  return { ...config, signers: signers }
 }
 
 export const isConfigEqual = (a: WalletConfig, b: WalletConfig): boolean => {
