@@ -8,7 +8,7 @@ export abstract class RemoteSigner extends AbstractSigner {
   abstract signMessageWithData(message: BytesLike, data?: BytesLike, chainId?: ChainId): Promise<string>
 
   signMessage(message: BytesLike, chainId?: number): Promise<string> {
-    return this.signMessageWithData(message)
+    return this.signMessageWithData(message, undefined, chainId)
   }
 
   sendTransaction(_: TransactionRequest): Promise<TransactionResponse> {
@@ -33,5 +33,4 @@ export abstract class RemoteSigner extends AbstractSigner {
   static isRemoteSigner(signer: AbstractSigner): signer is RemoteSigner {
     return (<RemoteSigner>signer).signMessageWithData !== undefined
   }
-
 }
