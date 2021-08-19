@@ -22,7 +22,7 @@ export type SignErrorCallback = (event: {
   request: SignRequest
 }) => void
 
-export class InteractiveSigner extends RemoteSigner {
+export class RemoteSignerInspector extends RemoteSigner {
   private _onSignRequest: SignRequestCallback[] = []
   private _onSigned: SignedCallback[] = []
   private _onSignError: SignErrorCallback[] = []

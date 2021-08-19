@@ -34,3 +34,7 @@ export abstract class RemoteSigner extends AbstractSigner {
     return (<RemoteSigner>signer).signMessageWithData !== undefined
   }
 }
+
+export interface CancelableRemoteSigner {
+  cancel(message: BytesLike, chainId?: number): void
+}

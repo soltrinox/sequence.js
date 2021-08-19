@@ -1,3 +1,5 @@
-export { RemoteSigner } from './remote-signer'
+export { RemoteSigner, CancelableRemoteSigner } from './remote-signer'
 export { GuardRemoteSigner } from './guard-remote-signer'
 export { LocalRemoteSigner } from './local-remote-signer'
+export { InteractiveRemoteSigner} from './interactive-remote-signer'
+export { RemoteSignerInspector } from './remote-signer-inspector'
