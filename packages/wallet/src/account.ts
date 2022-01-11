@@ -449,12 +449,17 @@ export class Account extends Signer {
 
   async isDeployed(target?: Wallet | ChainIdLike): Promise<boolean> {
     const wallet = (() => {
-      if (!target) return this.authWallet().wallet
-      if ((<Wallet>target).address) {
-        return target as Wallet
+      if (!target) {
+        return this.authWallet().wallet
       }
-      return this.getWalletByNetwork(target as NetworkConfig).wallet
+
+      if (typeof target === 'object' && target instanceof Wallet) {
+        return target
+      }
+
+      return this.getWalletByNetwork(target).wallet
     })()
+
     return wallet.isDeployed()
   }
 
