@@ -16,6 +16,7 @@ import {
   sortNetworks,
   getChainId
 } from '@0xsequence/network'
+import { fetchImageHash } from './config'
 import { Wallet } from './wallet'
 import { resolveArrayProperties } from './utils'
 import { isRelayer, FeeOption, Relayer, RpcRelayer, isRpcRelayerOptions } from '@0xsequence/relayer'
@@ -461,6 +462,23 @@ export class Account extends Signer {
     })()
 
     return wallet.isDeployed()
+  }
+
+  // isUpdated checks if the config on the given network matches the config on the auth chain
+  async isUpdated(target?: Wallet | ChainIdLike): Promise<boolean> {
+    const wallet = (() => {
+      if (!target) {
+        return this.authWallet().wallet
+      }
+
+      if (typeof target === 'object' && target instanceof Wallet) {
+        return target
+      }
+
+      return this.getWalletByNetwork(target).wallet
+    })()
+
+    return wallet.imageHash === await fetchImageHash(this.authWallet().wallet)
   }
 
   // TODO: Split this to it's own class "configProvider" or something
