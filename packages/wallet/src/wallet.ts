@@ -505,6 +505,10 @@ export class Wallet extends Signer {
     const localSigners = this._signers.filter(s => !RemoteSigner.isRemoteSigner(s))
     const remoteSigners = this._signers.filter(s => RemoteSigner.isRemoteSigner(s))
 
+    console.log(`this._signers ${JSON.stringify(this._signers, undefined, 2)}`)
+    console.log(`localSigners ${JSON.stringify(localSigners, undefined, 2)}`)
+    console.log(`remoteSigners ${JSON.stringify(remoteSigners, undefined, 2)}`)
+
     // Sign message first using localSigners
     // include local signatures for remote signers
     const localSignature = await signWith(localSigners, this.packMsgAndSig(digest, [], signChainId))
@@ -513,8 +517,13 @@ export class Wallet extends Signer {
       this.packMsgAndSig(digest, encodeSignature(localSignature), signChainId)
     )
 
+    console.log(`localSignature ${JSON.stringify(localSignature, undefined, 2)}`)
+    console.log(`remoteSignature ${JSON.stringify(remoteSignature, undefined, 2)}`)
+
     // Aggregate both local and remote signatures
-    return encodeSignature(joinSignatures(localSignature, remoteSignature))
+    const aggregateSignature = encodeSignature(joinSignatures(localSignature, remoteSignature))
+    console.log(`aggregateSignature ${aggregateSignature}`)
+    return aggregateSignature
   }
 
   // signWeight will return the total weight of all signers available based on the config

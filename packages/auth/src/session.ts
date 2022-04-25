@@ -275,6 +275,8 @@ export class Session {
             .useConfig(val.config!)
             .sign(proof.messageDigest())
             .then(signature => {
+              console.log(`ethauth proof digest ${ethers.utils.hexlify(proof.messageDigest())}`)
+              console.log(`ethauth proof signature ${signature}`)
               proof.signature = signature
               return ethAuth.encodeProof(proof, true)
             })
