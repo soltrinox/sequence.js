@@ -74,43 +74,19 @@ export class RpcRelayer extends BaseRelayer implements Relayer {
   }
 
   async estimateGasLimits(config: WalletConfig, context: WalletContext, ...transactions: Transaction[]): Promise<Transaction[]> {
-    logger.info(`[rpc-relayer/estimateGasLimits] estimate gas limits request ${JSON.stringify(transactions)}`)
+    console.log(`[rpc-relayer/estimateGasLimits] simulating transactions ${JSON.stringify(transactions)}`)
 
     if (transactions.length == 0) {
       return []
     }
 
-    const addr = addressOf(config, context)
-    const prevNonce = readSequenceNonce(...transactions)
+    const wallet = addressOf(config, context)
+    const results = await this.simulate(wallet, ...transactions)
 
-    // Set temporal nonce to simulate meta-txn
-    if (prevNonce === undefined) {
-      transactions = appendNonce(transactions, await this.getNonce(config, context))
-    }
-
-    const coder = ethers.utils.defaultAbiCoder
-    const encoded = coder.encode([MetaTransactionsType], [sequenceTxAbiEncode(transactions)])
-    const res = await this.service.updateMetaTxnGasLimits({
-      walletAddress: addr,
-      walletConfig: {
-        address: addr,
-        signers: config.signers,
-        threshold: config.threshold,
-        chainId: config.chainId
-      },
-      payload: encoded
-    })
-
-    const decoded = coder.decode([MetaTransactionsType], res.payload)[0]
-    const modTxns = transactions.map((t, i) => ({
-      ...t,
-      gasLimit: decoded[i].gasLimit
+    return transactions.map((transaction, i) => ({
+      ...transaction,
+      gasLimit: transaction.gasLimit === undefined ? results[i].gasLimit : transaction.gasLimit
     }))
-
-    logger.info(`[rpc-relayer/estimateGasLimits] got transactions with gas limits ${JSON.stringify(modTxns)}`)
-
-    // Remove placeholder nonce if previously defined
-    return prevNonce === undefined ? modTxns : appendNonce(modTxns, prevNonce)
   }
 
   async getFeeOptions(
