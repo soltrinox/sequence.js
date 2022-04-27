@@ -96,7 +96,8 @@ export class RpcRelayer extends BaseRelayer implements Relayer {
 
     return transactions.map((transaction, i) => ({
       ...transaction,
-      gasLimit: transaction.gasLimit === undefined ? results[i].gasLimit : transaction.gasLimit
+      gasLimit:
+        !transaction.gasLimit || ethers.BigNumber.from(transaction.gasLimit).isZero() ? results[i].gasLimit : transaction.gasLimit
     }))
   }
 
