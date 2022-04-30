@@ -17,6 +17,7 @@
     "@0xsequence/network": "^0.36.13",
     "@0xsequence/utils": "^0.36.13",
     "@ethersproject/providers": "^5.5.1",
+    "@ethersproject/properties": "^5.5.2",
     "ethers": "^5.5.2"
   },
   "devDependencies": {

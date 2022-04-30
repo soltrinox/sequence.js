@@ -20,8 +20,9 @@
     "@0xsequence/abi": "^0.36.13",
     "@0xsequence/config": "^0.36.13",
     "@0xsequence/transactions": "^0.36.13",
+    "@0xsequence/network": "^0.36.13",
     "@0xsequence/utils": "^0.36.13",
-    "@ethersproject/providers": "^5.5.1",
+    "@ethersproject/providers": "^5.5.2",
     "ethers": "^5.5.2",
     "fetch-ponyfill": "^7.1.0"
   },
