@@ -26,7 +26,7 @@ esac
 packages=(./packages/*)
 for p in "${packages[@]}"
 do
-  (cd $p && yarn $option)
+  (cd $p && pnpm $option)
 done
 
 exit $?

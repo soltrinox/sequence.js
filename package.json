@@ -3,13 +3,13 @@
   "private": true,
   "license": "Apache-2.0",
   "scripts": {
-    "build": "yarn dev && yarn typecheck && preconstruct build && yarn post-build",
+    "build": "pnpm dev && pnpm typecheck && preconstruct build && pnpm post-build",
     "post-build": "node ./scripts/fix-mocha-ref.js",
     "watch": "preconstruct watch",
     "clean": "rimraf ./node_modules",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "release": "yarn build && changeset publish",
+    "release": "pnpm build && changeset publish",
     "test": "wsrun --serial -c test",
     "test:parallel": "wsrun -c test",
     "lint": "eslint -c .eslintrc.js 'packages/**/src/**/*.{ts,tsx}'",
@@ -19,15 +19,15 @@
     "typecheck": "tsc --noEmit",
     "dev": "preconstruct dev",
     "postinstall": "preconstruct dev",
-    "coverage": "rimraf ./coverage && rimraf ./.nyc_output && nyc yarn test",
+    "coverage": "rimraf ./coverage && rimraf ./.nyc_output && nyc pnpm test",
     "link-sequence": "./scripts/yarn-link.sh link",
     "unlink-sequence": "./scripts/yarn-link.sh unlink",
     "prepare": "husky-run install"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn lint",
-      "pre-push": "yarn lint && yarn build && yarn test:parallel"
+      "pre-commit": "pnpm lint",
+      "pre-push": "pnpm lint && pnpm build && pnpm test:parallel"
     }
   },
   "devDependencies": {
