@@ -12,15 +12,22 @@ jobs:
         with:
           path: ~/.pnpm-store
           key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-
-      - uses: pnpm/action-setup@v2.2.1
+          restore-keys: |
+            ${{ runner.os }}-
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2.2.1
         with:
           version: 6.32.10
           run_install: true
-      - uses: actions/setup-node@v2
+
+      - name: Setup node
+        uses: actions/setup-node@v2
         with:
-          node-version: '14.x'
+          node-version: 16
           cache: 'pnpm'
+
+      - run: pnpm install
 
   typecheck:
     name: Run typecheck
@@ -32,15 +39,19 @@ jobs:
         with:
           path: ~/.pnpm-store
           key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-
+          restore-keys: |
+            ${{ runner.os }}-
       - uses: pnpm/action-setup@v2.2.1
         with:
           version: 6.32.10
           run_install: true
       - uses: actions/setup-node@v2
         with:
-          node-version: '14.x'
+          node-version: 16
           cache: 'pnpm'
+
+      - run: pnpm install
+
       - run: pnpm dev && pnpm typecheck
 
   lint:
@@ -53,14 +64,18 @@ jobs:
         with:
           path: ~/.pnpm-store
           key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-
+          restore-keys: |
+            ${{ runner.os }}-
       - uses: pnpm/action-setup@v2.2.1
         with:
           version: 6.32.10
       - uses: actions/setup-node@v2
         with:
-          node-version: '14.x'
+          node-version: 16
           cache: 'pnpm'
+
+      - run: pnpm install
+
       - run: pnpm dev && pnpm lint
 
   build:
@@ -74,8 +89,11 @@ jobs:
           version: 6.32.10
       - uses: actions/setup-node@v2
         with:
-          node-version: '14.x'
+          node-version: 16
           cache: 'pnpm'
+
+      - run: pnpm install
+
       - run: pnpm dev && pnpm build
 
   coverage:
@@ -89,9 +107,13 @@ jobs:
           version: 6.32.10
       - uses: actions/setup-node@v2
         with:
-          node-version: '14.x'
+          node-version: 16
           cache: 'pnpm'
+
+      - run: pnpm install
+
       - run: pnpm dev && (pnpm coverage || true)
+
       - uses: codecov/codecov-action@v1
         with:
           fail_ci_if_error: true
@@ -109,8 +131,11 @@ jobs:
           version: 6.32.10
       - uses: actions/setup-node@v2
         with:
-          node-version: '14.x'
+          node-version: 16
           cache: 'pnpm'
+
+      - run: pnpm install
+
       - run: pnpm dev && cd packages/0xsequence/ && pnpm test
 
   tests-abi:
@@ -124,8 +149,11 @@ jobs:
           version: 6.32.10
       - uses: actions/setup-node@v2
         with:
-          node-version: '14.x'
+          node-version: 16
           cache: 'pnpm'
+
+      - run: pnpm install
+
       - run: pnpm dev && cd packages/abi/ && pnpm test
 
   tests-api:
@@ -139,8 +167,11 @@ jobs:
           version: 6.32.10
       - uses: actions/setup-node@v2
         with:
-          node-version: '14.x'
+          node-version: 16
           cache: 'pnpm'
+
+      - run: pnpm install
+
       - run: pnpm dev && cd packages/api/ && pnpm test
 
   tests-auth:
@@ -154,8 +185,11 @@ jobs:
           version: 6.32.10
       - uses: actions/setup-node@v2
         with:
-          node-version: '14.x'
+          node-version: 16
           cache: 'pnpm'
+
+      - run: pnpm install
+
       - run: pnpm dev && cd packages/auth/ && pnpm test
 
   tests-bridge:
@@ -169,8 +203,11 @@ jobs:
           version: 6.32.10
       - uses: actions/setup-node@v2
         with:
-          node-version: '14.x'
+          node-version: 16
           cache: 'pnpm'
+
+      - run: pnpm install
+
       - run: pnpm dev && cd packages/bridge/ && pnpm test
 
   tests-config:
@@ -184,8 +221,11 @@ jobs:
           version: 6.32.10
       - uses: actions/setup-node@v2
         with:
-          node-version: '14.x'
+          node-version: 16
           cache: 'pnpm'
+
+      - run: pnpm install
+
       - run: pnpm dev && cd packages/config/ && pnpm test
 
   tests-deployer:
@@ -199,8 +239,11 @@ jobs:
           version: 6.32.10
       - uses: actions/setup-node@v2
         with:
-          node-version: '14.x'
+          node-version: 16
           cache: 'pnpm'
+
+      - run: pnpm install
+
       - run: pnpm dev && cd packages/deployer/ && pnpm test
 
   tests-estimator:
@@ -214,8 +257,11 @@ jobs:
           version: 6.32.10
       - uses: actions/setup-node@v2
         with:
-          node-version: '14.x'
+          node-version: 16
           cache: 'pnpm'
+
+      - run: pnpm install
+
       - run: pnpm dev && cd packages/estimator/ && pnpm test
 
   tests-guard:
@@ -229,8 +275,11 @@ jobs:
           version: 6.32.10
       - uses: actions/setup-node@v2
         with:
-          node-version: '14.x'
+          node-version: 16
           cache: 'pnpm'
+
+      - run: pnpm install
+
       - run: pnpm dev && cd packages/guard/ && pnpm test
 
   tests-indexer:
@@ -244,8 +293,11 @@ jobs:
           version: 6.32.10
       - uses: actions/setup-node@v2
         with:
-          node-version: '14.x'
+          node-version: 16
           cache: 'pnpm'
+
+      - run: pnpm install
+
       - run: pnpm dev && cd packages/indexer/ && pnpm test
 
   tests-metadata:
@@ -259,8 +311,11 @@ jobs:
           version: 6.32.10
       - uses: actions/setup-node@v2
         with:
-          node-version: '14.x'
+          node-version: 16
           cache: 'pnpm'
+
+      - run: pnpm install
+
       - run: pnpm dev && cd packages/metadata/ && pnpm test
 
   tests-multicall:
@@ -274,8 +329,11 @@ jobs:
           version: 6.32.10
       - uses: actions/setup-node@v2
         with:
-          node-version: '14.x'
+          node-version: 16
           cache: 'pnpm'
+
+      - run: pnpm install
+
       - run: pnpm dev && cd packages/multicall/ && pnpm test
 
   tests-network:
@@ -289,8 +347,11 @@ jobs:
           version: 6.32.10
       - uses: actions/setup-node@v2
         with:
-          node-version: '14.x'
+          node-version: 16
           cache: 'pnpm'
+
+      - run: pnpm install
+
       - run: pnpm dev && cd packages/network/ && pnpm test
 
   tests-provider:
@@ -304,8 +365,11 @@ jobs:
           version: 6.32.10
       - uses: actions/setup-node@v2
         with:
-          node-version: '14.x'
+          node-version: 16
           cache: 'pnpm'
+
+      - run: pnpm install
+
       - run: pnpm dev && cd packages/provider/ && pnpm test
 
   tests-relayer:
@@ -319,8 +383,11 @@ jobs:
           version: 6.32.10
       - uses: actions/setup-node@v2
         with:
-          node-version: '14.x'
+          node-version: 16
           cache: 'pnpm'
+
+      - run: pnpm install
+
       - run: pnpm dev && cd packages/relayer/ && pnpm test
 
   tests-transactions:
@@ -334,8 +401,11 @@ jobs:
           version: 6.32.10
       - uses: actions/setup-node@v2
         with:
-          node-version: '14.x'
+          node-version: 16
           cache: 'pnpm'
+
+      - run: pnpm install
+
       - run: pnpm dev && cd packages/transactions/ && pnpm test
 
   tests-utils:
@@ -349,8 +419,11 @@ jobs:
           version: 6.32.10
       - uses: actions/setup-node@v2
         with:
-          node-version: '14.x'
+          node-version: 16
           cache: 'pnpm'
+
+      - run: pnpm install
+
       - run: pnpm dev && cd packages/utils/ && pnpm test
 
   tests-wallet:
@@ -364,6 +437,9 @@ jobs:
           version: 6.32.10
       - uses: actions/setup-node@v2
         with:
-          node-version: '14.x'
+          node-version: 16
           cache: 'pnpm'
+
+      - run: pnpm install
+
       - run: pnpm dev && cd packages/wallet/ && pnpm test
