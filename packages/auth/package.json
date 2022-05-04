@@ -26,7 +26,6 @@
     "@0xsequence/network": "^0.36.13",
     "@0xsequence/wallet": "^0.36.13",
     "@0xsequence/utils": "^0.36.13",
-    "@0xsequence/provider": "^0.36.13",
     "ethers": "^5.5.2"
   },
   "peerDependencies": {},
