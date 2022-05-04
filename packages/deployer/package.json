@@ -9,10 +9,10 @@
   "author": "Horizon Blockchain Games",
   "license": "Apache-2.0",
   "scripts": {
-    "test": "yarn test:file tests/**/*.spec.ts",
+    "test": "pnpm test:file tests/**/*.spec.ts",
     "test:file": "TS_NODE_PROJECT=../../tsconfig.test.json mocha -r ts-node/register --timeout 30000",
     "typecheck": "tsc --noEmit",
-    "build": "rm -rf src/typings && hardhat clean && yarn compile-contracts && yarn gen:typings",
+    "build": "rm -rf src/typings && hardhat clean && pnpm compile-contracts && pnpm gen:typings",
     "compile-contracts": "hardhat --max-memory 4096 compile",
     "gen:typings": "rm -f src/typings/contracts/* && typechain --target ethers-v5 --outDir src/typings/contracts './artifacts/contracts/!(build-info)/**/*[^dbg].json'"
   },

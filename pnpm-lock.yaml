@@ -7,6 +7,22 @@ importers:
 
   .:
     specifiers:
+      '@0xsequence/abi': workspace:*
+      '@0xsequence/api': workspace:*
+      '@0xsequence/auth': workspace:*
+      '@0xsequence/config': workspace:*
+      '@0xsequence/deployer': workspace:*
+      '@0xsequence/estimator': workspace:*
+      '@0xsequence/guard': workspace:*
+      '@0xsequence/indexer': workspace:*
+      '@0xsequence/metadata': workspace:*
+      '@0xsequence/multicall': workspace:*
+      '@0xsequence/network': workspace:*
+      '@0xsequence/provider': workspace:*
+      '@0xsequence/relayer': workspace:*
+      '@0xsequence/transactions': workspace:*
+      '@0xsequence/utils': workspace:*
+      '@0xsequence/wallet': workspace:*
       '@babel/core': ^7.16.12
       '@babel/plugin-proposal-class-properties': ^7.16.7
       '@babel/preset-env': ^7.16.11
@@ -41,6 +57,23 @@ importers:
       typescript: ^4.5.5
       wait-on: ^6.0.0
       wsrun: ^5.2.4
+    dependencies:
+      '@0xsequence/abi': link:packages/abi
+      '@0xsequence/api': link:packages/api
+      '@0xsequence/auth': link:packages/auth
+      '@0xsequence/config': link:packages/config
+      '@0xsequence/deployer': link:packages/deployer
+      '@0xsequence/estimator': link:packages/estimator
+      '@0xsequence/guard': link:packages/guard
+      '@0xsequence/indexer': link:packages/indexer
+      '@0xsequence/metadata': link:packages/metadata
+      '@0xsequence/multicall': link:packages/multicall
+      '@0xsequence/network': link:packages/network
+      '@0xsequence/provider': link:packages/provider
+      '@0xsequence/relayer': link:packages/relayer
+      '@0xsequence/transactions': link:packages/transactions
+      '@0xsequence/utils': link:packages/utils
+      '@0xsequence/wallet': link:packages/wallet
     devDependencies:
       '@babel/core': 7.16.12
       '@babel/plugin-proposal-class-properties': 7.16.7_@babel+core@7.16.12
@@ -103,20 +136,20 @@ importers:
       webpack-cli: ^4.6.0
       webpack-dev-server: ^3.11.2
     dependencies:
-      '@0xsequence/abi': link:../abi
-      '@0xsequence/api': link:../api
-      '@0xsequence/auth': link:../auth
-      '@0xsequence/config': link:../config
-      '@0xsequence/guard': link:../guard
-      '@0xsequence/indexer': link:../indexer
-      '@0xsequence/metadata': link:../metadata
-      '@0xsequence/multicall': link:../multicall
-      '@0xsequence/network': link:../network
-      '@0xsequence/provider': link:../provider
-      '@0xsequence/relayer': link:../relayer
-      '@0xsequence/transactions': link:../transactions
-      '@0xsequence/utils': link:../utils
-      '@0xsequence/wallet': link:../wallet
+      '@0xsequence/abi': 0.36.13
+      '@0xsequence/api': 0.36.13
+      '@0xsequence/auth': 0.36.13
+      '@0xsequence/config': 0.36.13
+      '@0xsequence/guard': 0.36.13
+      '@0xsequence/indexer': 0.36.13
+      '@0xsequence/metadata': 0.36.13
+      '@0xsequence/multicall': 0.36.13
+      '@0xsequence/network': 0.36.13
+      '@0xsequence/provider': 0.36.13
+      '@0xsequence/relayer': 0.36.13
+      '@0xsequence/transactions': 0.36.13
+      '@0xsequence/utils': 0.36.13
+      '@0xsequence/wallet': 0.36.13
       '@ethersproject/providers': 5.6.4
       ethers: 5.6.4
     devDependencies:
@@ -146,26 +179,28 @@ importers:
       '@0xsequence/indexer': ^0.36.12
       '@0xsequence/metadata': ^0.36.12
       '@0xsequence/network': ^0.36.12
-      '@0xsequence/provider': ^0.36.12
       '@0xsequence/utils': ^0.36.12
       '@0xsequence/wallet': ^0.36.12
+      '@0xsequence/wallet-contracts': 1.9.6
+      '@ethersproject/providers': ^5.5.2
       concurrently: ^6.5.0
       ethers: ^5.5.2
       hardhat: 2.1.2
       mockttp: ^2.4.0
     dependencies:
-      '@0xsequence/abi': link:../abi
-      '@0xsequence/api': link:../api
-      '@0xsequence/config': link:../config
+      '@0xsequence/abi': 0.36.13
+      '@0xsequence/api': 0.36.13
+      '@0xsequence/config': 0.36.13
       '@0xsequence/ethauth': 0.7.0_ethers@5.6.4
-      '@0xsequence/indexer': link:../indexer
-      '@0xsequence/metadata': link:../metadata
-      '@0xsequence/network': link:../network
-      '@0xsequence/provider': link:../provider
-      '@0xsequence/utils': link:../utils
-      '@0xsequence/wallet': link:../wallet
+      '@0xsequence/indexer': 0.36.13
+      '@0xsequence/metadata': 0.36.13
+      '@0xsequence/network': 0.36.13
+      '@0xsequence/utils': 0.36.13
+      '@0xsequence/wallet': 0.36.13
       ethers: 5.6.4
     devDependencies:
+      '@0xsequence/wallet-contracts': 1.9.6
+      '@ethersproject/providers': 5.6.4
       concurrently: 6.5.1
       hardhat: 2.1.2
       mockttp: 2.7.0
@@ -176,7 +211,7 @@ importers:
       '@maticnetwork/maticjs': ^2.0.51
       ethers: ^5.5.2
     dependencies:
-      '@0xsequence/network': link:../network
+      '@0xsequence/network': 0.36.13
       '@maticnetwork/maticjs': 2.0.51
       ethers: 5.6.4
 
@@ -186,13 +221,18 @@ importers:
       '@0xsequence/multicall': ^0.36.12
       '@0xsequence/network': ^0.36.12
       '@0xsequence/utils': ^0.36.12
+      '@0xsequence/wallet-contracts': 1.9.6
+      '@ethersproject/providers': ^5.5.0
       ethers: ^5.5.2
     dependencies:
-      '@0xsequence/abi': link:../abi
-      '@0xsequence/multicall': link:../multicall
-      '@0xsequence/network': link:../network
-      '@0xsequence/utils': link:../utils
+      '@0xsequence/abi': 0.36.13
+      '@0xsequence/multicall': 0.36.13
+      '@0xsequence/network': 0.36.13
+      '@0xsequence/utils': 0.36.13
       ethers: 5.6.4
+    devDependencies:
+      '@0xsequence/wallet-contracts': 1.9.6
+      '@ethersproject/providers': 5.6.4
 
   packages/deployer:
     specifiers:
@@ -208,7 +248,7 @@ importers:
       ethers: ^5.5.2
       typechain: ^6.0.5
     dependencies:
-      '@0xsequence/utils': link:../utils
+      '@0xsequence/utils': 0.36.13
       '@ethersproject/abi': 5.6.1
       '@ethersproject/bytes': 5.6.1
       '@ethersproject/contracts': 5.6.0
@@ -231,17 +271,20 @@ importers:
       '@0xsequence/wallet-contracts': 1.9.6
       '@ethersproject/abstract-signer': ^5.5.0
       '@ethersproject/properties': ^5.5.0
+      '@ethersproject/providers': ^5.5.0
       ethers: ^5.5.2
     dependencies:
-      '@0xsequence/abi': link:../abi
-      '@0xsequence/config': link:../config
-      '@0xsequence/network': link:../network
-      '@0xsequence/transactions': link:../transactions
-      '@0xsequence/utils': link:../utils
+      '@0xsequence/abi': 0.36.13
+      '@0xsequence/config': 0.36.13
+      '@0xsequence/network': 0.36.13
+      '@0xsequence/transactions': 0.36.13
+      '@0xsequence/utils': 0.36.13
       '@0xsequence/wallet-contracts': 1.9.6
       '@ethersproject/abstract-signer': 5.6.0
       '@ethersproject/properties': 5.6.0
       ethers: 5.6.4
+    devDependencies:
+      '@ethersproject/providers': 5.6.4
 
   packages/guard:
     specifiers: {}
@@ -267,15 +310,15 @@ importers:
       '@ethersproject/properties': ^5.5.2
       '@ethersproject/providers': ^5.5.1
       '@types/web3-provider-engine': ^14.0.1
-      eth-json-rpc-middleware: ^8.0.0
+      eth-json-rpc-middleware: ^8.1.0
       ethers: ^5.5.2
       json-rpc-engine: ^6.1.0
       web3: ^1.7.0
       web3-provider-engine: ^16.0.3
     dependencies:
-      '@0xsequence/abi': link:../abi
-      '@0xsequence/network': link:../network
-      '@0xsequence/utils': link:../utils
+      '@0xsequence/abi': 0.36.13
+      '@0xsequence/network': 0.36.13
+      '@0xsequence/utils': 0.36.13
       '@ethersproject/properties': 5.6.0
       '@ethersproject/providers': 5.6.4
       ethers: 5.6.4
@@ -290,16 +333,12 @@ importers:
   packages/network:
     specifiers:
       '@0xsequence/indexer': ^0.36.12
-      '@0xsequence/provider': ^0.36.12
-      '@0xsequence/relayer': ^0.36.12
       '@0xsequence/utils': ^0.36.12
       '@ethersproject/providers': ^5.5.1
       ethers: ^5.5.2
     dependencies:
-      '@0xsequence/indexer': link:../indexer
-      '@0xsequence/provider': link:../provider
-      '@0xsequence/relayer': link:../relayer
-      '@0xsequence/utils': link:../utils
+      '@0xsequence/indexer': 0.36.13
+      '@0xsequence/utils': 0.36.13
       '@ethersproject/providers': 5.6.4
       ethers: 5.6.4
 
@@ -322,14 +361,14 @@ importers:
       eventemitter2: ^6.4.5
       webextension-polyfill-ts: ^0.26.0
     dependencies:
-      '@0xsequence/abi': link:../abi
-      '@0xsequence/auth': link:../auth
-      '@0xsequence/config': link:../config
-      '@0xsequence/network': link:../network
-      '@0xsequence/relayer': link:../relayer
-      '@0xsequence/transactions': link:../transactions
-      '@0xsequence/utils': link:../utils
-      '@0xsequence/wallet': link:../wallet
+      '@0xsequence/abi': 0.36.13
+      '@0xsequence/auth': 0.36.13
+      '@0xsequence/config': 0.36.13
+      '@0xsequence/network': 0.36.13
+      '@0xsequence/relayer': 0.36.13
+      '@0xsequence/transactions': 0.36.13
+      '@0xsequence/utils': 0.36.13
+      '@0xsequence/wallet': 0.36.13
       '@ethersproject/abstract-signer': 5.6.0
       '@ethersproject/bytes': 5.6.1
       '@ethersproject/hash': 5.6.0
@@ -346,18 +385,21 @@ importers:
       '@0xsequence/network': ^0.36.12
       '@0xsequence/transactions': ^0.36.12
       '@0xsequence/utils': ^0.36.12
+      '@0xsequence/wallet-contracts': 1.9.6
       '@ethersproject/providers': ^5.5.1
       ethers: ^5.5.2
       fetch-ponyfill: ^7.1.0
     dependencies:
-      '@0xsequence/abi': link:../abi
-      '@0xsequence/config': link:../config
-      '@0xsequence/network': link:../network
-      '@0xsequence/transactions': link:../transactions
-      '@0xsequence/utils': link:../utils
+      '@0xsequence/abi': 0.36.13
+      '@0xsequence/config': 0.36.13
+      '@0xsequence/network': 0.36.13
+      '@0xsequence/transactions': 0.36.13
+      '@0xsequence/utils': 0.36.13
       '@ethersproject/providers': 5.6.4
       ethers: 5.6.4
       fetch-ponyfill: 7.1.0
+    devDependencies:
+      '@0xsequence/wallet-contracts': 1.9.6
 
   packages/transactions:
     specifiers:
@@ -369,10 +411,10 @@ importers:
       '@ethersproject/providers': ^5.5.0
       ethers: ^5.5.2
     dependencies:
-      '@0xsequence/abi': link:../abi
-      '@0xsequence/config': link:../config
-      '@0xsequence/network': link:../network
-      '@0xsequence/utils': link:../utils
+      '@0xsequence/abi': 0.36.13
+      '@0xsequence/config': 0.36.13
+      '@0xsequence/network': 0.36.13
+      '@0xsequence/utils': 0.36.13
       '@ethersproject/abi': 5.6.1
       '@ethersproject/providers': 5.6.4
       ethers: 5.6.4
@@ -393,6 +435,7 @@ importers:
     specifiers:
       '@0xsequence/abi': ^0.36.12
       '@0xsequence/config': ^0.36.12
+      '@0xsequence/ethauth': ^0.7.0
       '@0xsequence/guard': ^0.36.12
       '@0xsequence/network': ^0.36.12
       '@0xsequence/relayer': ^0.36.12
@@ -411,13 +454,13 @@ importers:
       ganache-core: ^2.13.2
       web3: ^1.7.0
     dependencies:
-      '@0xsequence/abi': link:../abi
-      '@0xsequence/config': link:../config
-      '@0xsequence/guard': link:../guard
-      '@0xsequence/network': link:../network
-      '@0xsequence/relayer': link:../relayer
-      '@0xsequence/transactions': link:../transactions
-      '@0xsequence/utils': link:../utils
+      '@0xsequence/abi': 0.36.13
+      '@0xsequence/config': 0.36.13
+      '@0xsequence/guard': 0.36.13
+      '@0xsequence/network': 0.36.13
+      '@0xsequence/relayer': 0.36.13
+      '@0xsequence/transactions': 0.36.13
+      '@0xsequence/utils': 0.36.13
       '@ethersproject/abi': 5.6.1
       '@ethersproject/abstract-signer': 5.6.0
       '@ethersproject/bytes': 5.6.1
@@ -427,12 +470,57 @@ importers:
       ethers: 5.6.4
       fetch-ponyfill: 7.1.0
     devDependencies:
+      '@0xsequence/ethauth': 0.7.0_ethers@5.6.4
       '@0xsequence/wallet-contracts': 1.9.6
       '@istanbuljs/nyc-config-typescript': 1.0.2_nyc@15.1.0
       ganache-core: 2.13.2
       web3: 1.7.3
 
 packages:
+
+  /@0xsequence/abi/0.36.13:
+    resolution: {integrity: sha512-PldKY3Ct+4dZ3z9m+edTn0JS/By7fDakx0BbynZRwNcfVnAWvmJDsIWI1xtg6reMPC4QYXCAmdZU5eWop3MSOg==}
+    dev: false
+
+  /@0xsequence/api/0.36.13:
+    resolution: {integrity: sha512-vcR9nt+gcEg2GuX6fkvp7UQm1SDxksgGBLCAWruFQMdhADyWYRZy/JmkmwoO3Iv/dFGd85Iy54lI+AOSKLV9aA==}
+    dependencies:
+      cross-fetch: 3.1.5
+    transitivePeerDependencies:
+      - encoding
+    dev: false
+
+  /@0xsequence/auth/0.36.13:
+    resolution: {integrity: sha512-OqG4rW2QzCtjekqEEZIYuo+9uaXa4478LPV+0Z/EghTDDzRXxX1kUJDn4dUFeu4bmVuenGv4QpXHTIh+qf78Xw==}
+    dependencies:
+      '@0xsequence/abi': 0.36.13
+      '@0xsequence/api': 0.36.13
+      '@0xsequence/config': 0.36.13
+      '@0xsequence/ethauth': 0.7.0_ethers@5.6.4
+      '@0xsequence/indexer': 0.36.13
+      '@0xsequence/metadata': 0.36.13
+      '@0xsequence/network': 0.36.13
+      '@0xsequence/utils': 0.36.13
+      '@0xsequence/wallet': 0.36.13
+      ethers: 5.6.4
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - utf-8-validate
+    dev: false
+
+  /@0xsequence/config/0.36.13:
+    resolution: {integrity: sha512-ON6956iDKh2K7hmhe0oTFDewb+bWQtlVuwouIkpHJ1qe/pHoJehw42r1dR2ASesgDaYeU7lrkPTbpliJQdpWCg==}
+    dependencies:
+      '@0xsequence/abi': 0.36.13
+      '@0xsequence/multicall': 0.36.13
+      '@0xsequence/network': 0.36.13
+      '@0xsequence/utils': 0.36.13
+      ethers: 5.6.4
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+    dev: false
 
   /@0xsequence/ethauth/0.7.0_ethers@5.6.4:
     resolution: {integrity: sha512-pghfR+OLm82wLMR9Uvvf53f0LniZLhcqw0G4EthFw1ME71/CWUskhR2MIeYKh1t7+OE3TqCbOBJ/p/buv8XynQ==}
@@ -441,6 +529,113 @@ packages:
     dependencies:
       ethers: 5.6.4
       js-base64: 3.7.2
+
+  /@0xsequence/guard/0.36.13:
+    resolution: {integrity: sha512-6zaJGqeykHzwM4AhrFAwS5meQFWJQuQ/7vpxfzYIKsOC8XkxtmP0s4iZHkmnx5vzcU62Opdo7hRO72S2eLJuyw==}
+    dev: false
+
+  /@0xsequence/indexer/0.36.13:
+    resolution: {integrity: sha512-dUYjLxv5OpU9pAZxei4gAdPAOmPzntb9q5FJPwBmzjM2NizgD5GtY7g/8UUkE2QH3R4AV/lFixk+5g9n5oRs1Q==}
+    dependencies:
+      cross-fetch: 3.1.5
+    transitivePeerDependencies:
+      - encoding
+    dev: false
+
+  /@0xsequence/metadata/0.36.13:
+    resolution: {integrity: sha512-llRcr6GT+H8jgIqy17RsT+hK9cO0/G5UYFv3e6PXE6oG1MaLXZFpByzkXc5fRRmjtRWOpDLSiGxj8ovrZHoFxQ==}
+    dependencies:
+      cross-fetch: 3.1.5
+    transitivePeerDependencies:
+      - encoding
+    dev: false
+
+  /@0xsequence/multicall/0.36.13:
+    resolution: {integrity: sha512-fzTUllwKotOcqBNeiqnYcqkxNCpFKHpIhuNLn47ksfsSySEVlln+8jNhivC6WoUiqNbZRSCq3akiYRO8lz7TSA==}
+    dependencies:
+      '@0xsequence/abi': 0.36.13
+      '@0xsequence/network': 0.36.13
+      '@0xsequence/utils': 0.36.13
+      '@ethersproject/providers': 5.6.4
+      ethers: 5.6.4
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+    dev: false
+
+  /@0xsequence/network/0.36.13:
+    resolution: {integrity: sha512-PmNRI6MehDS38MSEONpRkjyESsfZ4EDLbaOR/40gYSlhvfFHxYLtXgj5+f62/refxrA4e/LwWG3wkkr12XIU4A==}
+    dependencies:
+      '@0xsequence/utils': 0.36.13
+      '@ethersproject/providers': 5.6.4
+      ethers: 5.6.4
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+    dev: false
+
+  /@0xsequence/provider/0.36.13:
+    resolution: {integrity: sha512-uZj9+669Yie59XBVHqg6kYAuvyp1LSsaS4rVuYPMOUQQ9DQhH0hM8/mIi9rr8Tva9yGGDpqUAMrC4lY1zC3B/w==}
+    dependencies:
+      '@0xsequence/abi': 0.36.13
+      '@0xsequence/auth': 0.36.13
+      '@0xsequence/config': 0.36.13
+      '@0xsequence/network': 0.36.13
+      '@0xsequence/transactions': 0.36.13
+      '@0xsequence/utils': 0.36.13
+      '@0xsequence/wallet': 0.36.13
+      '@ethersproject/abstract-signer': 5.6.0
+      '@ethersproject/hash': 5.6.0
+      '@ethersproject/providers': 5.6.4
+      '@ethersproject/web': 5.6.0
+      ethers: 5.6.4
+      eventemitter2: 6.4.5
+      webextension-polyfill-ts: 0.26.0
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - utf-8-validate
+    dev: false
+
+  /@0xsequence/relayer/0.36.13:
+    resolution: {integrity: sha512-qfxcBDNG34Q9VqzTJNnNuCawHdM1WjOUBciNctstlD4v0ponLrgDhb6QPKyBx3LnwoZkuEaRX0vnDM5NcpC+9g==}
+    dependencies:
+      '@0xsequence/abi': 0.36.13
+      '@0xsequence/config': 0.36.13
+      '@0xsequence/transactions': 0.36.13
+      '@0xsequence/utils': 0.36.13
+      '@ethersproject/providers': 5.6.4
+      ethers: 5.6.4
+      fetch-ponyfill: 7.1.0
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - utf-8-validate
+    dev: false
+
+  /@0xsequence/transactions/0.36.13:
+    resolution: {integrity: sha512-otmGA4oGFuViddY3AOuZ3s3jKIsSjxKdSzLOrzi9bztYiNPH0WUO5zLyQrJwzirugCqUiUHYa9cdNSu6aamVzQ==}
+    dependencies:
+      '@0xsequence/abi': 0.36.13
+      '@0xsequence/network': 0.36.13
+      '@0xsequence/utils': 0.36.13
+      '@ethersproject/abi': 5.6.1
+      ethers: 5.6.4
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+    dev: false
+
+  /@0xsequence/utils/0.36.13:
+    resolution: {integrity: sha512-mn9gAPo8M+vKER+NxQ4R8RKumG5NhLee/e9MuEVbjPM1SwW6D1AcyOaR6sqWfgmZmVHZoitq2GKgZFRh3ny9nw==}
+    dependencies:
+      '@ethersproject/abstract-signer': 5.6.0
+      '@ethersproject/properties': 5.6.0
+      ethers: 5.6.4
+      js-base64: 3.7.2
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
     dev: false
 
   /@0xsequence/wallet-contracts/1.9.6:
@@ -450,6 +645,27 @@ packages:
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
+
+  /@0xsequence/wallet/0.36.13:
+    resolution: {integrity: sha512-duB9U7SP9v6hxAKGDgZgiO1ns/AcOvgIJCUW4oXiEiQPj2iSU5Lb6vivMbOXZr2kWFPxhmtu7LR3G8vloSXXiw==}
+    dependencies:
+      '@0xsequence/abi': 0.36.13
+      '@0xsequence/config': 0.36.13
+      '@0xsequence/guard': 0.36.13
+      '@0xsequence/network': 0.36.13
+      '@0xsequence/relayer': 0.36.13
+      '@0xsequence/transactions': 0.36.13
+      '@0xsequence/utils': 0.36.13
+      '@ethersproject/abi': 5.6.1
+      '@ethersproject/properties': 5.6.0
+      '@ethersproject/providers': 5.6.4
+      ethers: 5.6.4
+      fetch-ponyfill: 7.1.0
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - utf-8-validate
+    dev: false
 
   /@ardatan/aggregate-error/0.0.6:
     resolution: {integrity: sha512-vyrkEHG1jrukmzTPtyWB4NLPauUw5bQeg4uhn8f+1SSynmrOcyvlb1GKQjjgoBzElLdfXCRYX8UnBlhklOHYRQ==}
@@ -8880,7 +9096,6 @@ packages:
 
   /js-base64/3.7.2:
     resolution: {integrity: sha512-NnRs6dsyqUXejqk/yv2aiXlAvOs56sLkX6nUdeaNezI5LFFLlsZjOThmwnrcwh5ZZRwZlCMnVAY3CvhIhoVEKQ==}
-    dev: false
 
   /js-sha3/0.5.7:
     resolution: {integrity: sha1-DU/9gALVMzqrr0oj7tL2N0yfKOc=}

@@ -30,6 +30,24 @@
       "pre-push": "pnpm lint && pnpm build && pnpm test:parallel"
     }
   },
+  "dependencies": {
+    "@0xsequence/auth": "workspace:*",
+    "@0xsequence/abi": "workspace:*",
+    "@0xsequence/api": "workspace:*",
+    "@0xsequence/config": "workspace:*",
+    "@0xsequence/deployer": "workspace:*",
+    "@0xsequence/estimator": "workspace:*",
+    "@0xsequence/guard": "workspace:*",
+    "@0xsequence/indexer": "workspace:*",
+    "@0xsequence/metadata": "workspace:*",
+    "@0xsequence/multicall": "workspace:*",
+    "@0xsequence/network": "workspace:*",
+    "@0xsequence/provider": "workspace:*",
+    "@0xsequence/relayer": "workspace:*",
+    "@0xsequence/transactions": "workspace:*",
+    "@0xsequence/utils": "workspace:*",
+    "@0xsequence/wallet": "workspace:*"
+  },
   "devDependencies": {
     "@babel/core": "^7.16.12",
     "@babel/plugin-proposal-class-properties": "^7.16.7",
@@ -76,6 +94,5 @@
     "packages": [
       "packages/*"
     ]
-  },
-  "dependencies": {}
+  }
 }
