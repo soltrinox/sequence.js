@@ -4,7 +4,7 @@ import { WalletContext } from '@0xsequence/network'
 import { isValidSignature } from '@0xsequence/wallet'
 import { ConfigTracker } from '@0xsequence/config'
 
-export function NewSequenceProofValidator(context: WalletContext, configTracker: ConfigTracker): ValidatorFunc {
+export function getSequenceProofValidator(context: WalletContext, configTracker: ConfigTracker): ValidatorFunc {
   return async (provider: ethers.providers.JsonRpcProvider, chainId: number, proof: Proof): Promise<{ isValid: boolean, address?: string }> => {
     // Compute eip712 message digest from the proof claims
     const digest = proof.messageDigest()

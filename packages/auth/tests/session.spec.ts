@@ -17,7 +17,7 @@ const HookCallerMockArtifact = require('@0xsequence/wallet-contracts/artifacts/c
 
 const { expect } = chai.use(chaiAsPromised)
 
-import { NewSequenceProofValidator, Session} from '../src'
+import { getSequenceProofValidator, Session} from '../src'
 import { compareAddr, ConfigTracker, imageHash, LocalConfigTracker, RedundantConfigTracker, UntrustedConfigTracker } from '@0xsequence/config'
 
 import * as mockServer from 'mockttp'
@@ -347,7 +347,7 @@ describe('Wallet integration', function () {
         if (delayMs !== 0) await delay(delayMs)
 
         const ethauth = new ETHAuth(
-          NewSequenceProofValidator(context, configTracker)
+          getSequenceProofValidator(context, configTracker)
         )
 
         ethauth.chainId = ethnode.chainId
