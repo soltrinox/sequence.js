@@ -1621,6 +1621,47 @@ describe('Wallet integration', function () {
         })
       })
     })
+    describe('Validate nested signatures', () => {
+      for (const deployOuter of [true, false]) {
+        for (const deployInner of [true, false]) {
+          it(`Should validate outer ${deployOuter ? 'deployed' : 'not deployed'}, inner ${deployInner ? 'deployed' : 'not deployed'}`, async () => {
+            const innerEOA = ethers.Wallet.createRandom()
+            const inner = (await lib.Wallet.singleOwner(innerEOA, context)).connect(ethnode.provider, relayer)
+            const outerEOA = ethers.Wallet.createRandom()
+            const outerConfig = {
+              threshold: 2,
+              signers: [
+                { weight: 1, address: inner.address },
+                { weight: 1, address: outerEOA.address }
+              ]
+            }
+            const outer = (new lib.Wallet({ config: outerConfig, context }, inner, outerEOA)).connect(ethnode.provider, relayer)
+
+            if (deployOuter && deployInner) {
+              await Promise.all([outer, inner].map(wallet => wallet.deploy()))
+            } else if (deployOuter) {
+              await outer.deploy()
+            } else if (deployInner) {
+              await inner.deploy()
+            }
+
+            const signature = await outer.signMessage(message)
+
+            const promise = isValidSignature({
+              address: outer.address,
+              digest,
+              signature,
+              provider: ethnode.provider,
+              context,
+              chainId: ethnode.chainId
+            })
+
+            expect(promise).to.be.fulfilled
+            expect(await promise).to.be.true
+          })
+        }
+      }
+    })
   })
   describe('Update wallet configuration', () => {
     let transaction: Transactionish
