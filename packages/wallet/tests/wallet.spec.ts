@@ -1653,7 +1653,8 @@ describe('Wallet integration', function () {
               signature,
               provider: ethnode.provider,
               context,
-              chainId: ethnode.chainId
+              chainId: ethnode.chainId,
+              configTracker
             })
 
             expect(promise).to.be.fulfilled
