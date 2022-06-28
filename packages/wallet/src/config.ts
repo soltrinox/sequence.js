@@ -113,10 +113,12 @@ export const recoverConfigFromDigest = async (
         if (!chainId) throw new Error('chainId is required to validate wallet signers')
         if (!configTracker) throw new Error('configTracker is required to validate wallet signers')
 
+        const signature = s.signature.substring(0, s.signature.length - 2)
+
         if (!(await isValidSignature({
           address: s.address,
           digest: ethers.utils.arrayify(digest),
-          signature: ethers.utils.hexlify(s.signature),
+          signature: ethers.utils.hexlify(signature),
           provider,
           context,
           chainId,
