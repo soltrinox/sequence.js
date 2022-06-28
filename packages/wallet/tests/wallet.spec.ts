@@ -1637,13 +1637,20 @@ describe('Wallet integration', function () {
             }
             const outer = (new lib.Wallet({ config: outerConfig, context }, inner, outerEOA)).connect(ethnode.provider, relayer)
 
-            if (deployOuter && deployInner) {
-              await Promise.all([outer, inner].map(wallet => wallet.deploy()))
-            } else if (deployOuter) {
-              await outer.deploy()
-            } else if (deployInner) {
-              await inner.deploy()
+            const promises = [
+              ...[outer, inner].map(({ config }) => configTracker.saveWalletConfig({ config })),
+              ...[outer, inner].map(({ address: wallet, imageHash, context }) => configTracker.saveCounterFactualWallet({ wallet, imageHash, context} as any))
+            ]
+
+            if (deployOuter) {
+              promises.push(outer.deploy().then())
             }
+
+            if (deployInner) {
+              promises.push(inner.deploy().then())
+            }
+
+            await Promise.all(promises)
 
             const signature = await outer.signMessage(message)
 
