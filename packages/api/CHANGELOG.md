@@ -1,5 +1,29 @@
 # @0xsequence/api
 
+## 0.39.6
+
+### Patch Changes
+
+- indexer: update client bindings
+
+## 0.39.5
+
+### Patch Changes
+
+- provider: fix networkRpcUrl config option
+
+## 0.39.4
+
+### Patch Changes
+
+- api: update client bindings
+
+## 0.39.3
+
+### Patch Changes
+
+- add request method on Web3Provider
+
 ## 0.39.2
 
 ### Patch Changes

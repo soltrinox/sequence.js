@@ -1,5 +1,65 @@
 # @0xsequence/auth
 
+## 0.39.6
+
+### Patch Changes
+
+- indexer: update client bindings
+- Updated dependencies
+  - @0xsequence/abi@0.39.6
+  - @0xsequence/api@0.39.6
+  - @0xsequence/config@0.39.6
+  - @0xsequence/indexer@0.39.6
+  - @0xsequence/metadata@0.39.6
+  - @0xsequence/network@0.39.6
+  - @0xsequence/utils@0.39.6
+  - @0xsequence/wallet@0.39.6
+
+## 0.39.5
+
+### Patch Changes
+
+- provider: fix networkRpcUrl config option
+- Updated dependencies
+  - @0xsequence/abi@0.39.5
+  - @0xsequence/api@0.39.5
+  - @0xsequence/config@0.39.5
+  - @0xsequence/indexer@0.39.5
+  - @0xsequence/metadata@0.39.5
+  - @0xsequence/network@0.39.5
+  - @0xsequence/utils@0.39.5
+  - @0xsequence/wallet@0.39.5
+
+## 0.39.4
+
+### Patch Changes
+
+- api: update client bindings
+- Updated dependencies
+  - @0xsequence/abi@0.39.4
+  - @0xsequence/api@0.39.4
+  - @0xsequence/config@0.39.4
+  - @0xsequence/indexer@0.39.4
+  - @0xsequence/metadata@0.39.4
+  - @0xsequence/network@0.39.4
+  - @0xsequence/utils@0.39.4
+  - @0xsequence/wallet@0.39.4
+
+## 0.39.3
+
+### Patch Changes
+
+- add request method on Web3Provider
+- Updated dependencies
+  - @0xsequence/abi@0.39.3
+  - @0xsequence/api@0.39.3
+  - @0xsequence/config@0.39.3
+  - @0xsequence/indexer@0.39.3
+  - @0xsequence/metadata@0.39.3
+  - @0xsequence/network@0.39.3
+  - @0xsequence/utils@0.39.3
+  - @0xsequence/wallet@0.39.3
+
 ## 0.39.2
 
 ### Patch Changes
