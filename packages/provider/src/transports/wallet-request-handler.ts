@@ -30,7 +30,7 @@ import { isUpgradableSigner, prefixEIP191Message, Signer } from '@0xsequence/wal
 import { isSignedTransactionBundle, TransactionRequest } from '@0xsequence/transactions'
 import { signAuthorization, AuthorizationOptions } from '@0xsequence/auth'
 import { logger, TypedData } from '@0xsequence/utils'
-import { SessionsApiConfigTrackerOptions } from '@0xsequence/config/src/tracker/sessions-api-config-tracker'
+import { SessionsApiConfigTrackerOptions } from '@0xsequence/config'
 
 const SIGNER_READY_TIMEOUT = 10000
 

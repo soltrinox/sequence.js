@@ -14,7 +14,7 @@ import {
   JsonRpcSender,
 } from '@0xsequence/network'
 import { Account, resolveArrayProperties, Signer } from '@0xsequence/wallet'
-import { SessionsApiConfigTracker, WalletConfig, WalletState } from '@0xsequence/config'
+import { SessionsApiConfigTracker, SessionsApiConfigTrackerOptions, WalletConfig, WalletState } from '@0xsequence/config'
 import { Relayer } from '@0xsequence/relayer'
 import { Deferrable, shallowCopy, resolveProperties, Forbid } from '@0xsequence/utils'
 import {
@@ -24,7 +24,6 @@ import {
   TransactionBundle
 } from '@0xsequence/transactions'
 import { WalletRequestHandler } from './transports/wallet-request-handler'
-import { SessionsApiConfigTrackerOptions } from '@0xsequence/config/src/tracker/sessions-api-config-tracker'
 
 export class Web3Provider extends EthersWeb3Provider implements JsonRpcHandler {
   static isSequenceProvider(cand: any): cand is Web3Provider {
