@@ -75,6 +75,7 @@ export async function isValidSignature(args: ValidSignatureArgs): Promise<boolea
     provider,
     context,
     configTracker,
+    chainId
   } = args
 
   // Check if valid EOA signature
@@ -98,6 +99,17 @@ export async function isValidSignature(args: ValidSignatureArgs): Promise<boolea
   // we evaluate the counter-factual state
   if (!imageHash) {
     return isValidSequenceUndeployedWalletSignature(args)
+  }
+
+  // Check if signature matches a pending presigned configuration
+  const presigned = await configTracker?.loadPresignedConfiguration({
+    wallet: address,
+    fromImageHash: imageHash,
+    chainId,
+    prependUpdate: []
+  })
+  if (presigned && presigned.some(update => isValidSignatureForImageHash(update.body.newImageHash, args))) {
+    return true
   }
 
   // Then we evaluate the signature directly
