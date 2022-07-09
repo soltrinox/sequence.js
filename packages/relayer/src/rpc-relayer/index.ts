@@ -156,8 +156,24 @@ export class RpcRelayer implements Relayer {
     return nonce
   }
 
-  async relay(bundle: TransactionBundle): Promise<TransactionResponse> {
-    logger.info(`[rpc-relayer/relay] relaying signed meta-transactions ${JSON.stringify(bundle)}`)
+  async relay(bundle: TransactionBundle, quote?: FeeQuote): Promise<TransactionResponse> {
+    logger.info(
+      `[rpc-relayer/relay] relaying signed meta-transactions ${JSON.stringify(bundle)} with quote ${JSON.stringify(quote)}`
+    )
+
+    let typecheckedQuote: string | undefined
+    if (quote !== undefined) {
+      if (typeof quote._quote === 'string') {
+        typecheckedQuote = quote._quote
+      } else {
+        logger.warn(`[rpc-relayer/relay] ignoring invalid fee quote ${JSON.stringify(quote._quote)}`)
+      }
+    }
+
+    if (!this.provider) {
+      logger.warn(`[rpc-relayer/relay] provider not set, failed relay`)
+      throw new Error('provider is not set')
+    }
 
     const data = await encodeBundleExecData(bundle)
     const metaTxn = await this.service.sendMetaTxn({
@@ -165,7 +181,8 @@ export class RpcRelayer implements Relayer {
         walletAddress: bundle.intent.wallet,
         contract: bundle.entrypoint,
         input: data
-      }
+      },
+      quote: typecheckedQuote
     })
 
     logger.info(`[rpc-relayer/relay] got relay result ${JSON.stringify(metaTxn)}`)
