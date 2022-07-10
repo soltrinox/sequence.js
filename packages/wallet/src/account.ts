@@ -209,9 +209,23 @@ export class Account extends Signer {
     // Return cached relayer if available
     if (this._relayers[network.chainId]) return this._relayers[network.chainId]
 
-    // Cheate new relayer if not
-    if (!network.relayer) return undefined
-    const relayer = isRpcRelayerOptions(network.relayer) ? new RpcRelayer(network.relayer) : network.relayer
+    // Create relayer if not
+    let relayer: Relayer
+    if (!network.relayer) {
+      return
+    } else if (isRpcRelayerOptions(network.relayer)) {
+      if (network.relayer.provider) {
+        relayer = new RpcRelayer(network.relayer)
+      } else {
+        const provider = await this.getProvider(chainId)
+        if (!provider) {
+          throw new Error('provider is required')
+        }
+        relayer = new RpcRelayer({ ...network.relayer, provider })
+      }
+    } else {
+      relayer = network.relayer
+    }
 
     // Cache relayer
     this._relayers[network.chainId] = relayer
