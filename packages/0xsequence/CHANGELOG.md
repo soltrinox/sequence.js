@@ -1,5 +1,32 @@
 # 0xsequence
 
+## 0.0.0-coolcats-0.36.12-20220711222640
+
+### Patch Changes
+
+- relayer: always replace 0 gas limits too
+- relayer: estimate gas limits via simulation
+- Separates sending from waiting for a transaction
+- relayer: log simulate requests
+- Updated dependencies
+- Updated dependencies
+- Updated dependencies
+- Updated dependencies
+  - @0xsequence/relayer@0.0.0-coolcats-0.36.12-20220711222640
+  - @0xsequence/wallet@0.0.0-coolcats-0.36.12-20220711222640
+  - @0xsequence/abi@0.0.0-coolcats-0.36.12-20220711222640
+  - @0xsequence/api@0.0.0-coolcats-0.36.12-20220711222640
+  - @0xsequence/auth@0.0.0-coolcats-0.36.12-20220711222640
+  - @0xsequence/config@0.0.0-coolcats-0.36.12-20220711222640
+  - @0xsequence/guard@0.0.0-coolcats-0.36.12-20220711222640
+  - @0xsequence/indexer@0.0.0-coolcats-0.36.12-20220711222640
+  - @0xsequence/metadata@0.0.0-coolcats-0.36.12-20220711222640
+  - @0xsequence/multicall@0.0.0-coolcats-0.36.12-20220711222640
+  - @0xsequence/network@0.0.0-coolcats-0.36.12-20220711222640
+  - @0xsequence/provider@0.0.0-coolcats-0.36.12-20220711222640
+  - @0xsequence/transactions@0.0.0-coolcats-0.36.12-20220711222640
+  - @0xsequence/utils@0.0.0-coolcats-0.36.12-20220711222640
+
 ## 0.36.12
 
 ### Patch Changes
