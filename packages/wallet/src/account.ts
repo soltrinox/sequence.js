@@ -3,7 +3,20 @@ import { Signer as AbstractSigner, BytesLike, ethers } from 'ethers'
 import { TypedDataDomain, TypedDataField } from '@ethersproject/abstract-signer'
 import { Deferrable } from '@ethersproject/properties'
 import { SignedTransactionsCallback, Signer } from './signer'
-import { Transactionish, Transaction, TransactionRequest, unpackMetaTransactionData, sequenceTxAbiEncode, SignedTransactionBundle, TransactionBundle, encodeBundleExecData, packMetaTransactionsData, encodeNonce } from '@0xsequence/transactions'
+import {
+  SignedTransactionBundle,
+  Transaction,
+  TransactionBundle,
+  TransactionRequest,
+  Transactionish,
+  appendNonce,
+  computeMetaTxnHash,
+  encodeBundleExecData,
+  encodeNonce,
+  packMetaTransactionsData,
+  sequenceTxAbiEncode,
+  unpackMetaTransactionData
+} from '@0xsequence/transactions'
 import { WalletConfig, WalletState, ConfigTracker, imageHash, encodeSignature, SESSIONS_SPACE, addressOf , hasImplementationUpdate, decodeSignature, GAP_SESSION_STORAGE_SLOT } from '@0xsequence/config'
 import {
   ChainIdLike,
@@ -560,15 +573,31 @@ export class Account extends Signer {
     return wallet.signTypedData(domain, types, message, chainId, allSigners)
   }
 
-  sendTransactionBatch(transactions: Deferrable<TransactionRequest[] | Transaction[]>, chainId?: ChainIdLike, allSigners?: boolean, quote?: FeeQuote): Promise<TransactionResponse> {
-    return this.sendTransaction(transactions, chainId, allSigners, quote)
+  sendTransactionBatch(
+    transactions: Deferrable<TransactionRequest[] | Transaction[]>,
+    chainId?: ChainIdLike,
+    allSigners?: boolean,
+    quote?: FeeQuote,
+    callback?: SignedTransactionsCallback
+  ): Promise<TransactionResponse> {
+    return this.sendTransaction(transactions, chainId, allSigners, quote, callback)
   }
 
-  async sendTransaction(transaction: Deferrable<Transactionish>, chainId?: ChainIdLike, allSigners?: boolean, quote?: FeeQuote): Promise<TransactionResponse> {
+  async sendTransaction(
+    transaction: Deferrable<Transactionish>,
+    chainId?: ChainIdLike,
+    allSigners?: boolean,
+    quote?: FeeQuote,
+    callback?: SignedTransactionsCallback
+  ): Promise<TransactionResponse> {
     // Sign and send transactions using internal methods
     // these internal methods will decorate the transactions before relaying them
     // decoration appens wallet deployment or presigned wallet update
     const signed = await this.signTransactions(transaction, chainId, allSigners)
+    if (callback) {
+      const metaTxnHash = computeMetaTxnHash(signed.intent.wallet, signed.chainId, ...signed.transactions)
+      callback(signed, metaTxnHash)
+    }
     return this.sendSignedTransactions(signed, chainId, quote)
   }
 
@@ -586,7 +615,9 @@ export class Account extends Signer {
     // maybe we need to add a new type for GuestTransactionBundle and maybe details
     // about the original intent being signed or not
 
-    return { ...decorated, nonce: ethers.constants.Zero, signature: "" }
+    const nonce = ethers.constants.Zero
+    const transactions = appendNonce(decorated.transactions, nonce)
+    return { ...decorated, transactions, nonce, signature: "" }
   }
 
   async sendSignedTransactions(signedBundle: SignedTransactionBundle, chainId?: ChainIdLike, quote?: FeeQuote): Promise<TransactionResponse> {

@@ -349,11 +349,16 @@ export class Wallet extends Signer {
     }
   }
 
-  async updateConfig(newConfig: WalletConfig | string, chainId?: ChainIdLike, skipUpdateImplementation?: boolean): Promise<TransactionResponse> {
+  async updateConfig(
+    newConfig: WalletConfig | string,
+    chainId?: ChainIdLike,
+    skipUpdateImplementation?: boolean,
+    callback?: SignedTransactionsCallback
+  ): Promise<TransactionResponse> {
     if (!this.relayer) throw new Error(`Relayer not available for network ${chainId}`)
 
     const bundle = await this.buildUpdateConfig(newConfig, chainId, skipUpdateImplementation)
-    return this.sendTransaction(bundle.transactions)
+    return this.sendTransaction(bundle.transactions, chainId, undefined, undefined, callback)
   }
 
   async decorateTransactions(bundle: TransactionBundle, chainId?: ChainIdLike): Promise<TransactionBundle> {
