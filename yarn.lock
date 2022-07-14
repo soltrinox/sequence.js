@@ -16,10 +16,9 @@
   optionalDependencies:
     ethers "^5.0.32"
 
-"@0xsequence/wallet-contracts@https://gitpkg.now.sh/0xsequence/wallet-contracts/src?octopus-utils":
+"@0xsequence/wallet-contracts@https://gitpkg.now.sh/0xsequence/wallet-contracts/src?octopus-utils-2":
   version "1.9.4"
-  uid "5554476e16920e95afe1a5df56bc6bfa64b77eb4"
-  resolved "https://gitpkg.now.sh/0xsequence/wallet-contracts/src?octopus-utils#5554476e16920e95afe1a5df56bc6bfa64b77eb4"
+  resolved "https://gitpkg.now.sh/0xsequence/wallet-contracts/src?octopus-utils-2#5554476e16920e95afe1a5df56bc6bfa64b77eb4"
   optionalDependencies:
     ethers "^5.0.32"
 

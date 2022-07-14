@@ -27,7 +27,7 @@
   },
   "peerDependencies": {},
   "devDependencies": {
-    "@0xsequence/wallet-contracts": "https://gitpkg.now.sh/0xsequence/wallet-contracts/src?octopus-utils"
+    "@0xsequence/wallet-contracts": "https://gitpkg.now.sh/0xsequence/wallet-contracts/src?octopus-utils-2"
   },
   "files": [
     "src",
