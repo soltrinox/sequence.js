@@ -11,6 +11,7 @@ import {
   WalletConfig,
   WalletState,
   addressOf,
+  buildStubSignature,
   encodeSignature,
   hasImplementationUpdate,
   imageHash
@@ -41,6 +42,7 @@ import {
   computeMetaTxnHash,
   encodeBundleExecData,
   encodeNonce,
+  fromTransactionish,
   packMetaTransactionsData,
   sequenceTxAbiEncode,
   unpackMetaTransactionData
@@ -48,7 +50,7 @@ import {
 import { ImageHashSource, fetchImageHash, richFetchImageHash } from './config'
 import { SignedTransactionsCallback, Signer } from './signer'
 import { Wallet } from './wallet'
-import { getImplementation, isWalletDeployed } from './utils'
+import { getImplementation, isWalletDeployed, resolveArrayProperties } from './utils'
 
 export interface AccountOptions {
   // The only unique identifier for a wallet is they address
@@ -147,13 +149,48 @@ export class Account extends Signer {
     return ethers.BigNumber.from(slot)
   }
 
-  async getFeeOptions(bundle: TransactionBundle, chainId?: ChainIdLike): Promise<{ options: FeeOption[], quote?: FeeQuote }> {
-    // Decorate bundle in deploy/update
-    const decorated = await this.decorateTransactions(bundle, chainId)
+  async getFeeOptions(
+    transactionish: Deferrable<Transactionish>,
+    chainId?: ChainIdLike,
+    _allSigners: boolean = true
+  ): Promise<{
+    options: FeeOption[]
+    quote?: FeeQuote
+    bundle: TransactionBundle
+  }> {
+    chainId = maybeChainId(chainId) ?? this.defaultChainId
 
-    const cid = maybeChainId(chainId) ?? this.defaultChainId
-    const relayer = await this.getRelayer(cid)
-    return relayer?.getFeeOptions(decorated) ?? { options: [], quote: undefined }
+    const transaction = await resolveArrayProperties<Transactionish>(transactionish)
+    const transactions = await fromTransactionish(this._context, this.address, transaction)
+
+    const [config, provider, relayer] = await Promise.all([
+      this.getWalletConfig(chainId),
+      this.getProvider(chainId),
+      this.getRelayer(chainId)
+    ])
+    if (!config) {
+      throw new Error(`no config for chain ${chainId}`)
+    }
+    if (!provider) {
+      throw new Error(`no provider for chain ${chainId}`)
+    }
+    if (!relayer) {
+      throw new Error(`no relayer for chain ${chainId}`)
+    }
+
+    const signature = await buildStubSignature(provider, config)
+
+    const bundle = await this.decorateTransactions({
+      intent: { digest: '', wallet: this.address },
+      entrypoint: this.address,
+      chainId: ethers.BigNumber.from(chainId),
+      transactions,
+      nonce: ethers.constants.Zero,
+      signature: encodeSignature(signature)
+    }, chainId)
+
+    const { options, quote } = await relayer.getFeeOptions(bundle)
+    return { options, quote, bundle }
   }
 
   private async _getWallet(chainId?: ChainIdLike): Promise<Wallet | undefined> {
@@ -533,7 +570,7 @@ export class Account extends Signer {
     return relayer.relay({ ...deployTx, intent: { digest: 'TODO: compute digest', wallet: this.address } })
   }
 
-  async decorateTransactions(bundle: TransactionBundle, chainId?: ChainIdLike): Promise<TransactionBundle> {
+  async decorateTransactions(bundle: TransactionBundle | SignedTransactionBundle, chainId?: ChainIdLike): Promise<TransactionBundle> {
     // Get wallet of network
     const cid = maybeChainId(chainId) || this.defaultChainId
 
