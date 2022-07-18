@@ -1,8 +1,36 @@
-import { TransactionResponse, JsonRpcProvider, Provider } from '@ethersproject/providers'
-import { Signer as AbstractSigner, BytesLike, ethers } from 'ethers'
+import { ethers, BytesLike, Signer as AbstractSigner } from 'ethers'
+import { Interface } from '@ethersproject/abi'
 import { TypedDataDomain, TypedDataField } from '@ethersproject/abstract-signer'
 import { Deferrable } from '@ethersproject/properties'
-import { SignedTransactionsCallback, Signer } from './signer'
+import { JsonRpcProvider, Provider, TransactionResponse } from '@ethersproject/providers'
+import { walletContracts } from '@0xsequence/abi'
+import {
+  ConfigTracker,
+  GAP_SESSION_STORAGE_SLOT,
+  SESSIONS_SPACE,
+  WalletConfig,
+  WalletState,
+  addressOf,
+  encodeSignature,
+  hasImplementationUpdate,
+  imageHash
+} from '@0xsequence/config'
+import {
+  ChainIdLike,
+  NetworkConfig,
+  WalletContext,
+  getChainId,
+  mainnetNetworks,
+  maybeChainId,
+  sequenceContext
+} from '@0xsequence/network'
+import {
+  FeeOption,
+  FeeQuote,
+  Relayer,
+  RpcRelayer,
+  isRpcRelayerOptions
+} from '@0xsequence/relayer'
 import {
   SignedTransactionBundle,
   Transaction,
@@ -17,22 +45,10 @@ import {
   sequenceTxAbiEncode,
   unpackMetaTransactionData
 } from '@0xsequence/transactions'
-import { WalletConfig, WalletState, ConfigTracker, imageHash, encodeSignature, SESSIONS_SPACE, addressOf , hasImplementationUpdate, decodeSignature, GAP_SESSION_STORAGE_SLOT } from '@0xsequence/config'
-import {
-  ChainIdLike,
-  NetworkConfig,
-  WalletContext,
-  sequenceContext,
-  mainnetNetworks,
-  getChainId,
-  maybeChainId
-} from '@0xsequence/network'
+import { ImageHashSource, fetchImageHash, richFetchImageHash } from './config'
+import { SignedTransactionsCallback, Signer } from './signer'
 import { Wallet } from './wallet'
-import { FeeOption, FeeQuote, isRpcRelayerOptions, Relayer, RpcRelayer } from '@0xsequence/relayer'
-import { fetchImageHash, getImplementation, isWalletDeployed } from '.'
-import { walletContracts } from '@0xsequence/abi'
-import { Interface } from '@ethersproject/abi'
-import { ImageHashSource, richFetchImageHash } from './config'
+import { getImplementation, isWalletDeployed } from './utils'
 
 export interface AccountOptions {
   // The only unique identifier for a wallet is they address
